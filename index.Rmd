@@ -1,6 +1,6 @@
 ---
 title: "Felipe Henrique Menezes"
-image: "tobi.jpg"
+image: "fotopessoal.jpg"
 links:
   - label: LinkedIn
     url: "https://www.linkedin.com/in/felipe-henrique-silva-ba11b434b/"
@@ -9,8 +9,6 @@ links:
   - label: GitHub
     url: "https://github.com/FlpMenezes"
   - label: Email
-    url: "felipehmasilva@gmail.com"
-  - label: Relatórios
     url: "felipehmasilva@gmail.com"
 output:
   postcards::jolla
