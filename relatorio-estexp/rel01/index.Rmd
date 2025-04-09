@@ -62,7 +62,7 @@ tabela_sinal <- data.frame(
 )
 
 # Exibindo tabela
-kable(tabela_sinal, caption = "Tabela 1: Intensidade de Sinal 5G Coletada em Ouro Branco - MG")
+kable(tabela_sinal, caption = "Tabela 1: Valores das medições de celocidade")
 
 ```
 
