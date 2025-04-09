@@ -24,7 +24,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo =FALSE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ------------------------------------------------------------------------
@@ -35,13 +35,13 @@ knitr::opts_chunk$set(echo =FALSE)
 
 # Objetivo
 
-Construir um primeiro relatórios com dados da área da engenharia mecatrônica com base em pogramação
+Construir um primeiro relatórios com dados da área da engenharia mecatrônica com base em pogramação em R 
 
-# presentação do relatório
+# Apresentação do relatório
 
-ANÁLISE DE COBERTURA 5G - OURO BRANCO (MG)
+Desgaste do sistema mecânico
 
-Após reclamações dos moradores da cidade de Ouro Branco-MG a operadora de telefonia celular Liga+Brasil contratou um engenheiro de telecomunições para verificar possiveis problemas com a intensidade do sinal na cidade, o engenheiro realizou algumas medições e após colocar os resultados no Rstudio obeteve as seguintes informações:
+Em uma linha de produção automatizada de peças, há um sistema de transportadores que movimenta peças de um ponto a outro. O sistema foi projetado para que as peças se movam com uma velocidade média de 2 metros por segundo (m/s). No entanto, devido a variações nos motores e no desgaste do sistema, a velocidade de movimentação das peças pode variar ao longo do tempo.
 
 ```{r}
 # Instale o pacote 'modeest' se ainda não tiver
@@ -53,13 +53,12 @@ library(knitr)
 ```{r}
 # Dados coletados
 ponto <- 1:20
-vel <- c(-65, -70, -68, -72, -74, -80, -77, -69, -75, -73,
-              -71, -78, -82, -76, -79, -67, -66, -83, -81, -70)
+vel <- c( 2.1, 1.7, 1.9, 2, 2.2, 1.6, 2.2, 1.9, 2.5, 2.1, 1.9, 1.4, 2, 2.1, 2.4, 2.1, 2.3, 1.8, 2, 1.8 )
 
 # Criando tabela
 tabela_sinal <- data.frame(
-  `tempo` = ponto,
-  `velocidade` = vel
+  `Tempo` = ponto,
+  `Velocidade` = vel
 )
 
 # Exibindo tabela
@@ -94,27 +93,17 @@ kable(tabela_estatisticas, caption = "Tabela 2: Medidas Estatísticas das veloci
 ```
 
 ```{r}
-hist(sinal_5g, breaks = 10, col = "steelblue", border = "white",
+hist(vel, breaks = 15, col = "green", border = "black",
      main = "Distribuição das velocidades",
      xlab = "velocidade", ylab = "Frequência")
-abline(v = media, col = "red", lwd = 2, lty = 2)
-legend("topright", legend = c("Média"), col = "red", lty = 2, lwd = 2)
+abline(v = media, col = "darkblue", lwd = 2, lty = 2)
+legend("topright", legend = c("Média"), col = "darkblue", lty = 2, lwd = 2)
 
 ```
 
-```{r}
-boxplot(vel, horizontal = TRUE, col = "lightblue",
-        main = "Boxplot das velocidades",
-        xlab = "velocidades")
-
-```
 
 # Conclusão
 
-Levando em consideração que a intesidade de sinal considerada aceitavel é de -70 dBm, o engenheiro constatou que o sinal esta em um nivel adequado, porém algumas partes da cidade estão chegando em um nivel pessimo ( -90 dBm) e um estudo mais minucioso deve ser feito nos locais com intensidades proximas a -80 dBm. Tambem foi possivel notar que nenhuma medição apontou um sinal execelente (-30 dBm) isso pode indicar que a operadora esta trabalhando em um limiar não muito agradavel para a população e seus serviços podem estar muito expostos a contratempos como efeitos climaticos, anomalias atmosfericas e até mesmo contruções civis ou a geografia local, sendo assim como parte de seu relatorio final o engenheiro solicitou uma nova investigação dessa vez mais abrangente para verificar quais pontos devem ser melhorados para resguardar os serviços da Liga+Brasil e melhorar a cobertura da população.
+Sistemas mecânicos são pensados para ter uma vida útil e um tempo para que seus componentes possam sofrer alguma alteração de performace, entretanto, dependendo de qual finalidade ele for usado, exemplo para movimentações de cargas pesadas e contìnuas (ex: correia transportadora), esses dispotivos podem sofrer uma alteração ainda mais rápida que o normal, por isso o estudo de caso e acompanhamento se faz imprescindível para mapear uma boa manutenção e utilização do equiamento, sem grandes desgastes e com alta produtividade.
 
-# Codigos e Prompt usados
 
-(Essa parte ainda esta em deselvolvimento pois não achei a forma com que eu gostaria que o codigo fosse apresentado, irei na Aula dessa Segunda-feira 07/04/2025 tirar umas duvidas sobre a anexasão de arquivos .pdf ou .docx para que eu possa disponibilizar no relatorio o codigo e o prompt usado no chatGPT).
-
-Lembro a todos que esse relatorio foi todo baseado em um problema fictísio e me ponho a disposição para explicar motivações e pensamentos sobre o mesmo.
