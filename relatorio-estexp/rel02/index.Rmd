@@ -1,0 +1,126 @@
+---
+title: "Relatório 02"
+author: "Felipe Henrique"
+date: "10/04/2025"
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{center}
+    \includegraphics[width=2in,height=2in]{ufsj.png}\LARGE\\}
+  - \posttitle{\end{center}}
+toc-title: "Sumário"
+output:
+  
+  html_document:
+    theme: journal
+    highlight: tango
+    toc: yes
+    number_sections: yes
+    includes:
+      in_header: logo.html
+  pdf_document:
+    
+    toc: yes
+    number_sections: yes
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+# Objetivo
+
+Entender a utilização das distribuições amostrais e como os dados dela tirados podem ser aplicados inicialmente
+
+# Apresentação do relatório
+
+## Conceito de distribução amostral
+
+A distribuição amostral é a distribuição de uma estatística (como a média, variância ou proporção) calculada a partir de várias amostras retiradas da mesma população, ela permite entender o comportamento da estatística quando se coleta diferentes amostras
+
+Ex: Se coletarmos 100 amostras de 30 estudantes e calcularmos a média das notas em cada amostra, a distribuição dessas médias é a distribuição amostral da média.
+
+## Casos de distribuições amostrais
+
+```{r}
+# 1. Definindo a população
+set.seed(123)  # Para reprodutibilidade
+populacao <- rnorm(10000, mean = 70, sd = 10)  # População normal com média 70 e desvio padrão 10
+
+# 2. Função para tirar uma amostra e calcular a média
+media_amostral <- function(n) {
+  sample(populacao, size = n, replace = TRUE) |> mean()
+}
+
+# 3. Gerando várias médias amostrais
+n_amostras <- 1000     # Número de amostras
+n <- 30                # Tamanho de cada amostra
+medias <- replicate(n_amostras, media_amostral(n))
+
+# 4. Plotando a distribuição das médias
+hist(medias, 
+     breaks = 30, 
+     col = "skyblue", 
+     border = "white",
+     main = paste("Distribuição das Médias Amostrais (n =", n, " - População simétrica)"),
+     xlab = "Média Amostral")
+
+# 5. Adicionando a média da população
+abline(v = mean(populacao), col = "red", lwd = 2, lty = 2)
+legend("topright", legend = "Média Populacional", col = "red", lwd = 2, lty = 2)
+
+```
+
+- A média das amostras tende a ser a média da população
+
+- A distribuição dessas médias tende ao formato normal (graças ao Teorema Central do Limite), mesmo com amostras de tamanho moderado (n = 30)
+```{r}
+# 1. Criando uma população assimétrica (exponencial)
+set.seed(42)
+populacao <- rexp(10000, rate = 1/50)  # média = 50, distribuição exponencial (assimétrica à direita)
+
+# 2. Função para tirar uma amostra e calcular a média
+media_amostral <- function(n) {
+  sample(populacao, size = n, replace = TRUE) |> mean()
+}
+
+# 3. Gerando médias amostrais
+n_amostras <- 1000
+n <- 30  # Tamanho de cada amostra
+medias <- replicate(n_amostras, media_amostral(n))
+
+# 4. Plotando a distribuição das médias
+hist(medias,
+     breaks = 30,
+     col = "orange",
+     border = "white",
+     main = paste("Distribuição das Médias Amostrais (n =", n, " - População Assimétrica)"),
+     xlab = "Média Amostral")
+
+# 5. Adicionando a média da população
+abline(v = mean(populacao), col = "darkred", lwd = 2, lty = 2)
+legend("topright", legend = "Média Populacional", col = "darkred", lwd = 2, lty = 2)
+
+```
+- A população original é assimétrica — puxa mais valores baixos 
+
+- Mesmo assim, a distribuição das médias amostrais vai parecer quase normal
+
+- Isso acontece porque, mesmo com uma população assimétrica, a média das amostras tende a se distribuir normalmente se o tamanho da amostra for suficiente
+
+## Comportamento das distribuições amostrais
+
+A média das amostras se aproxima da média real da população, mesmo com diferentes tipos de distribuição.
+
+A distribuição das médias amostrais tende a ser normal (formato de sino), mesmo quando a população não é normal — isso é garantido pelo Teorema Central do Limite.
+
+Isso mostra que podemos usar técnicas paramétricas mesmo em contextos reais com populações assimétricas, desde que o tamanho da amostra seja razoável.
+
+# Conclusão
+
+Logo se faz imprescindível o uso das distribuições para cálculos estatísticos, uma vez que é possível medir variações dentro de grupos, e com combinações entre essas amostras é possível tirar conclusões que podemos utilizar para entender certo comportamento de um grupo, comparações, previsões e conclusões sobre determinados dados
