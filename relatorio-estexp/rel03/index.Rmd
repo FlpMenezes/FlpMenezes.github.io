@@ -1,0 +1,482 @@
+---
+title: "Relatório 03"
+author: "Felipe Henrique"
+date: "17/04/2025"
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{center}
+    \includegraphics[width=2in,height=2in]{ufsj.png}\LARGE\\}
+  - \posttitle{\end{center}}
+toc-title: "Sumário"
+output:
+  
+  html_document:
+    theme: journal
+    highlight: tango
+    toc: yes
+    number_sections: yes
+    includes:
+      in_header: logo.html
+  pdf_document:
+    
+    toc: yes
+    number_sections: yes
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+# Objetivo
+
+Através da análise de um grupo de resultados, construir a ideia de poder e como as variavéis estão atreladas aos testes que podemos fazer
+
+# Apresentação do relatório
+
+Este relatório foi dividido em quatro "experimentos" com distribuições normais diferentes em cada sessão, dentro de cada uma delas possui ainda 3 alphas diferentes, portanto ao final do relatório é possível a visualização de 12 gráficos e a explicação deles  
+
+## Testes com distribuição normal = 90
+grafico com alpha de 5% 
+```{r}
+set.seed(123)
+n_sim <- 10000
+n <- 30
+mu <- 90
+sigma <- 4
+alpha <- 0.05
+
+# Simulação dos p-valores
+p_values <- replicate(n_sim, {
+  x <- rnorm(n, mean = mu, sd = sigma)
+  t.test(x, mu = mu)$p.value
+})
+
+# Verificar a proporção de rejeição de H0
+rejeicao <- mean(p_values < alpha)
+cat("Proporção de rejeições de H0 (nível empírico):", rejeicao, "\n")
+
+# Visualização com histograma padrão
+hist(p_values, breaks = 20, col = "skyblue", main = "Distribuição dos p-valores",
+     xlab = "p-valor", ylab = "Frequência")
+abline(v = 0.05, col = "red", lwd = 2, lty = 2)
+legend("topright", legend = "linha alpha(0.5)", col = "red", lwd = 2, lty = 2)
+
+```
+grafico com alpha de 1%
+```{r}
+set.seed(123)
+n_sim <- 10000
+n <- 30
+mu <- 90
+sigma <- 4
+alpha <- 0.01
+
+# Simulação dos p-valores
+p_values <- replicate(n_sim, {
+  x <- rnorm(n, mean = mu, sd = sigma)
+  t.test(x, mu = mu)$p.value
+})
+
+# Verificar a proporção de rejeição de H0
+rejeicao <- mean(p_values < alpha)
+cat("Proporção de rejeições de H0 (nível empírico):", rejeicao, "\n")
+
+# Visualização com histograma padrão
+hist(p_values, breaks = 20, col = "skyblue", main = "Distribuição dos p-valores",
+     xlab = "p-valor", ylab = "Frequência")
+abline(v = 0.01, col = "red", lwd = 2, lty = 2)
+legend("topright", legend = "linha alpha(0.01)", col = "red", lwd = 2, lty = 2)
+
+```
+
+grafico com alpha de 10%
+```{r}
+set.seed(123)
+n_sim <- 10000
+n <- 30
+mu <- 90
+sigma <- 4
+alpha <- 0.1
+
+# Simulação dos p-valores
+p_values <- replicate(n_sim, {
+  x <- rnorm(n, mean = mu, sd = sigma)
+  t.test(x, mu = mu)$p.value
+})
+
+# Verificar a proporção de rejeição de H0
+rejeicao <- mean(p_values < alpha)
+cat("Proporção de rejeições de H0 (nível empírico):", rejeicao, "\n")
+
+# Visualização com histograma padrão
+hist(p_values, breaks = 20, col = "skyblue", main = "Distribuição dos p-valores",
+     xlab = "p-valor", ylab = "Frequência")
+abline(v = 0.1, col = "red", lwd = 2, lty = 2)
+legend("topright", legend = "linha alpha(0.1)", col = "red", lwd = 2, lty = 2)
+```
+
+## Testes com 1 erro padrão
+alpha 5%
+```{r}
+set.seed(456)  # nova simulação
+n_sim <- 10000
+n <- 30
+mu_0 <- 90   # média sob H₀
+mu_1 <- 91   # média real (sob H₁)
+sigma <- 4
+alpha <- 0.05
+
+# Simular p-valores com a média real ≠ H₀
+p_values_power <- replicate(n_sim, {
+  x <- rnorm(n, mean = mu_1, sd = sigma)
+  t.test(x, mu = mu_0)$p.value
+})
+
+# Estimar poder: proporção de p-valores < alpha
+poder_estimado <- mean(p_values_power < alpha)
+
+cat("Poder estimado do teste (μ₁ = 91):", round(poder_estimado, 4), "\n")
+
+library(ggplot2)
+
+df_power <- data.frame(p_value = p_values_power)
+
+ggplot(df_power, aes(x = p_value)) +
+  geom_histogram(binwidth = 0.025, fill = "lightgreen", color = "white") +
+  geom_vline(xintercept = alpha, color = "red", linetype = "dashed", linewidth = 1.2) +
+  labs(
+    title = "Distribuição dos p-valores (H1: μ ≠ 90, μ real = 91)",
+    x = "p-valor",
+    y = "Frequência"
+  ) +
+  annotate("text", x = alpha + 0.05, y = max(table(cut(p_values_power, breaks = seq(0, 1, 0.025)))), 
+           label = "α = 0.05", color = "red", size = 5, hjust = 0) +
+  theme_minimal()
+
+```
+
+alpha 1%
+```{r}
+set.seed(456)  # nova simulação
+n_sim <- 10000
+n <- 30
+mu_0 <- 90   # média sob H₀
+mu_1 <- 91   # média real (sob H₁)
+sigma <- 4
+alpha <- 0.01
+
+# Simular p-valores com a média real ≠ H₀
+p_values_power <- replicate(n_sim, {
+  x <- rnorm(n, mean = mu_1, sd = sigma)
+  t.test(x, mu = mu_0)$p.value
+})
+
+# Estimar poder: proporção de p-valores < alpha
+poder_estimado <- mean(p_values_power < alpha)
+
+cat("Poder estimado do teste (μ₁ = 91):", round(poder_estimado, 4), "\n")
+
+library(ggplot2)
+
+df_power <- data.frame(p_value = p_values_power)
+
+ggplot(df_power, aes(x = p_value)) +
+  geom_histogram(binwidth = 0.025, fill = "lightgreen", color = "white") +
+  geom_vline(xintercept = alpha, color = "red", linetype = "dashed", linewidth = 1.2) +
+  labs(
+    title = "Distribuição dos p-valores (H1: μ ≠ 90, μ real = 91)",
+    x = "p-valor",
+    y = "Frequência"
+  ) +
+  annotate("text", x = alpha + 0.01, y = max(table(cut(p_values_power, breaks = seq(0, 1, 0.025)))), 
+           label = "α = 0.01", color = "red", size = 5, hjust = 0) +
+  theme_minimal()
+
+```
+
+alpha com 10%
+```{r}
+set.seed(456)  # nova simulação
+n_sim <- 10000
+n <- 30
+mu_0 <- 90   # média sob H₀
+mu_1 <- 91   # média real (sob H₁)
+sigma <- 4
+alpha <- 0.1
+
+# Simular p-valores com a média real ≠ H₀
+p_values_power <- replicate(n_sim, {
+  x <- rnorm(n, mean = mu_1, sd = sigma)
+  t.test(x, mu = mu_0)$p.value
+})
+
+# Estimar poder: proporção de p-valores < alpha
+poder_estimado <- mean(p_values_power < alpha)
+
+cat("Poder estimado do teste (μ₁ = 91):", round(poder_estimado, 4), "\n")
+
+library(ggplot2)
+
+df_power <- data.frame(p_value = p_values_power)
+
+ggplot(df_power, aes(x = p_value)) +
+  geom_histogram(binwidth = 0.025, fill = "lightgreen", color = "white") +
+  geom_vline(xintercept = alpha, color = "red", linetype = "dashed", linewidth = 1.2) +
+  labs(
+    title = "Distribuição dos p-valores (H1: μ ≠ 90, μ real = 91)",
+    x = "p-valor",
+    y = "Frequência"
+  ) +
+  annotate("text", x = alpha + 0.1, y = max(table(cut(p_values_power, breaks = seq(0, 1, 0.025)))), 
+           label = "α = 0.1", color = "red", size = 5, hjust = 0) +
+  theme_minimal()
+
+```
+
+## Testes com 2 erros padrão
+alpha 5%
+```{r}
+set.seed(456)  # nova simulação
+n_sim <- 10000
+n <- 30
+mu_0 <- 90   # média sob H₀
+mu_1 <- 92   # média real (sob H₁)
+sigma <- 4
+alpha <- 0.05
+
+# Simular p-valores com a média real ≠ H₀
+p_values_power <- replicate(n_sim, {
+  x <- rnorm(n, mean = mu_1, sd = sigma)
+  t.test(x, mu = mu_0)$p.value
+})
+
+# Estimar poder: proporção de p-valores < alpha
+poder_estimado <- mean(p_values_power < alpha)
+
+cat("Poder estimado do teste (μ₁ = 92):", round(poder_estimado, 4), "\n")
+
+library(ggplot2)
+
+df_power <- data.frame(p_value = p_values_power)
+
+ggplot(df_power, aes(x = p_value)) +
+  geom_histogram(binwidth = 0.025, fill = "lightgreen", color = "white") +
+  geom_vline(xintercept = alpha, color = "red", linetype = "dashed", linewidth = 1.2) +
+  labs(
+    title = "Distribuição dos p-valores (H1: μ ≠ 90, μ real = 92)",
+    x = "p-valor",
+    y = "Frequência"
+  ) +
+  annotate("text", x = alpha + 0.05, y = max(table(cut(p_values_power, breaks = seq(0, 1, 0.025)))), 
+           label = "α = 0.05", color = "red", size = 5, hjust = 0) +
+  theme_minimal()
+
+```
+
+alpha 1%
+```{r}
+set.seed(456)  # nova simulação
+n_sim <- 10000
+n <- 30
+mu_0 <- 90   # média sob H₀
+mu_1 <- 92   # média real (sob H₁)
+sigma <- 4
+alpha <- 0.01
+
+# Simular p-valores com a média real ≠ H₀
+p_values_power <- replicate(n_sim, {
+  x <- rnorm(n, mean = mu_1, sd = sigma)
+  t.test(x, mu = mu_0)$p.value
+})
+
+# Estimar poder: proporção de p-valores < alpha
+poder_estimado <- mean(p_values_power < alpha)
+
+cat("Poder estimado do teste (μ₁ = 92):", round(poder_estimado, 4), "\n")
+
+library(ggplot2)
+
+df_power <- data.frame(p_value = p_values_power)
+
+ggplot(df_power, aes(x = p_value)) +
+  geom_histogram(binwidth = 0.025, fill = "lightgreen", color = "white") +
+  geom_vline(xintercept = alpha, color = "red", linetype = "dashed", linewidth = 1.2) +
+  labs(
+    title = "Distribuição dos p-valores (H1: μ ≠ 90, μ real = 92)",
+    x = "p-valor",
+    y = "Frequência"
+  ) +
+  annotate("text", x = alpha + 0.01, y = max(table(cut(p_values_power, breaks = seq(0, 1, 0.025)))), 
+           label = "α = 0.01", color = "red", size = 5, hjust = 0) +
+  theme_minimal()
+
+```
+
+alpha com 10%
+```{r}
+set.seed(456)  # nova simulação
+n_sim <- 10000
+n <- 30
+mu_0 <- 90   # média sob H₀
+mu_1 <- 92   # média real (sob H₁)
+sigma <- 4
+alpha <- 0.1
+
+# Simular p-valores com a média real ≠ H₀
+p_values_power <- replicate(n_sim, {
+  x <- rnorm(n, mean = mu_1, sd = sigma)
+  t.test(x, mu = mu_0)$p.value
+})
+
+# Estimar poder: proporção de p-valores < alpha
+poder_estimado <- mean(p_values_power < alpha)
+
+cat("Poder estimado do teste (μ₁ = 92):", round(poder_estimado, 4), "\n")
+
+library(ggplot2)
+
+df_power <- data.frame(p_value = p_values_power)
+
+ggplot(df_power, aes(x = p_value)) +
+  geom_histogram(binwidth = 0.025, fill = "lightgreen", color = "white") +
+  geom_vline(xintercept = alpha, color = "red", linetype = "dashed", linewidth = 1.2) +
+  labs(
+    title = "Distribuição dos p-valores (H1: μ ≠ 90, μ real = 92)",
+    x = "p-valor",
+    y = "Frequência"
+  ) +
+  annotate("text", x = alpha + 0.1, y = max(table(cut(p_values_power, breaks = seq(0, 1, 0.025)))), 
+           label = "α = 0.1", color = "red", size = 5, hjust = 0) +
+  theme_minimal()
+
+```
+
+## Testes com 3 erros padrão
+alpha 5%
+```{r}
+set.seed(456)  # nova simulação
+n_sim <- 10000
+n <- 30
+mu_0 <- 90   # média sob H₀
+mu_1 <- 93   # média real (sob H₁)
+sigma <- 4
+alpha <- 0.05
+
+# Simular p-valores com a média real ≠ H₀
+p_values_power <- replicate(n_sim, {
+  x <- rnorm(n, mean = mu_1, sd = sigma)
+  t.test(x, mu = mu_0)$p.value
+})
+
+# Estimar poder: proporção de p-valores < alpha
+poder_estimado <- mean(p_values_power < alpha)
+
+cat("Poder estimado do teste (μ₁ = 93):", round(poder_estimado, 4), "\n")
+
+library(ggplot2)
+
+df_power <- data.frame(p_value = p_values_power)
+
+ggplot(df_power, aes(x = p_value)) +
+  geom_histogram(binwidth = 0.025, fill = "lightgreen", color = "white") +
+  geom_vline(xintercept = alpha, color = "red", linetype = "dashed", linewidth = 1.2) +
+  labs(
+    title = "Distribuição dos p-valores (H1: μ ≠ 90, μ real = 93)",
+    x = "p-valor",
+    y = "Frequência"
+  ) +
+  annotate("text", x = alpha + 0.05, y = max(table(cut(p_values_power, breaks = seq(0, 1, 0.025)))), 
+           label = "α = 0.05", color = "red", size = 5, hjust = 0) +
+  theme_minimal()
+
+```
+
+alpha 1%
+```{r}
+set.seed(456)  # nova simulação
+n_sim <- 10000
+n <- 30
+mu_0 <- 90   # média sob H₀
+mu_1 <- 93   # média real (sob H₁)
+sigma <- 4
+alpha <- 0.01
+
+# Simular p-valores com a média real ≠ H₀
+p_values_power <- replicate(n_sim, {
+  x <- rnorm(n, mean = mu_1, sd = sigma)
+  t.test(x, mu = mu_0)$p.value
+})
+
+# Estimar poder: proporção de p-valores < alpha
+poder_estimado <- mean(p_values_power < alpha)
+
+cat("Poder estimado do teste (μ₁ = 93):", round(poder_estimado, 4), "\n")
+
+library(ggplot2)
+
+df_power <- data.frame(p_value = p_values_power)
+
+ggplot(df_power, aes(x = p_value)) +
+  geom_histogram(binwidth = 0.025, fill = "lightgreen", color = "white") +
+  geom_vline(xintercept = alpha, color = "red", linetype = "dashed", linewidth = 1.2) +
+  labs(
+    title = "Distribuição dos p-valores (H1: μ ≠ 90, μ real = 93)",
+    x = "p-valor",
+    y = "Frequência"
+  ) +
+  annotate("text", x = alpha + 0.01, y = max(table(cut(p_values_power, breaks = seq(0, 1, 0.025)))), 
+           label = "α = 0.01", color = "red", size = 5, hjust = 0) +
+  theme_minimal()
+
+```
+
+alpha com 10%
+```{r}
+set.seed(456)  # nova simulação
+n_sim <- 10000
+n <- 30
+mu_0 <- 90   # média sob H₀
+mu_1 <- 93   # média real (sob H₁)
+sigma <- 4
+alpha <- 0.1
+
+# Simular p-valores com a média real ≠ H₀
+p_values_power <- replicate(n_sim, {
+  x <- rnorm(n, mean = mu_1, sd = sigma)
+  t.test(x, mu = mu_0)$p.value
+})
+
+# Estimar poder: proporção de p-valores < alpha
+poder_estimado <- mean(p_values_power < alpha)
+
+cat("Poder estimado do teste (μ₁ = 93):", round(poder_estimado, 4), "\n")
+
+library(ggplot2)
+
+df_power <- data.frame(p_value = p_values_power)
+
+ggplot(df_power, aes(x = p_value)) +
+  geom_histogram(binwidth = 0.025, fill = "lightgreen", color = "white") +
+  geom_vline(xintercept = alpha, color = "red", linetype = "dashed", linewidth = 1.2) +
+  labs(
+    title = "Distribuição dos p-valores (H1: μ ≠ 90, μ real = 93)",
+    x = "p-valor",
+    y = "Frequência"
+  ) +
+  annotate("text", x = alpha + 0.1, y = max(table(cut(p_values_power, breaks = seq(0, 1, 0.025)))), 
+           label = "α = 0.1", color = "red", size = 5, hjust = 0) +
+  theme_minimal()
+
+```
+
+# Conclusão
+Conclui-se que
+
+
+
