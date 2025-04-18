@@ -41,8 +41,14 @@ Através da análise de um grupo de resultados, construir a ideia de poder e com
 
 Este relatório foi dividido em quatro "experimentos" com distribuições normais diferentes em cada sessão, dentro de cada uma delas possui ainda 3 alphas diferentes, portanto ao final do relatório é possível a visualização de 12 gráficos e a explicação deles  
 
+# Conceitos Iniciais
+
+-α (alpha) é o nível de significância do teste, ele representa a probabilidade de cometer um erro tipo I,  ou seja é a chance de rejeitar a hipótese nula H₀ mesmo quando ela é verdadeira.
+
+-Poder é a probabilidade de rejeitar a hipótese nula (H₀) quando ela é falas, é a capacidade do seu teste de encontrar essa diferença quando ela realmente existe.
+
 ## Testes com distribuição normal = 90
-grafico com alpha de 5% 
+__grafico com alpha de 5%__ 
 ```{r}
 set.seed(123)
 n_sim <- 10000
@@ -59,7 +65,7 @@ p_values <- replicate(n_sim, {
 
 # Verificar a proporção de rejeição de H0
 rejeicao <- mean(p_values < alpha)
-cat("Proporção de rejeições de H0 (nível empírico):", rejeicao, "\n")
+cat("Proporção de rejeições de H0 (nível empírico):", rejeicao*100, "%\n")
 
 # Visualização com histograma padrão
 hist(p_values, breaks = 20, col = "skyblue", main = "Distribuição dos p-valores",
@@ -68,7 +74,7 @@ abline(v = 0.05, col = "red", lwd = 2, lty = 2)
 legend("topright", legend = "linha alpha(0.5)", col = "red", lwd = 2, lty = 2)
 
 ```
-grafico com alpha de 1%
+__grafico com alpha de 1%__
 ```{r}
 set.seed(123)
 n_sim <- 10000
@@ -85,7 +91,7 @@ p_values <- replicate(n_sim, {
 
 # Verificar a proporção de rejeição de H0
 rejeicao <- mean(p_values < alpha)
-cat("Proporção de rejeições de H0 (nível empírico):", rejeicao, "\n")
+cat("Proporção de rejeições de H0 (nível empírico):", rejeicao*100, "%\n")
 
 # Visualização com histograma padrão
 hist(p_values, breaks = 20, col = "skyblue", main = "Distribuição dos p-valores",
@@ -95,7 +101,7 @@ legend("topright", legend = "linha alpha(0.01)", col = "red", lwd = 2, lty = 2)
 
 ```
 
-grafico com alpha de 10%
+__grafico com alpha de 10%__
 ```{r}
 set.seed(123)
 n_sim <- 10000
@@ -112,7 +118,7 @@ p_values <- replicate(n_sim, {
 
 # Verificar a proporção de rejeição de H0
 rejeicao <- mean(p_values < alpha)
-cat("Proporção de rejeições de H0 (nível empírico):", rejeicao, "\n")
+cat("Proporção de rejeições de H0 (nível empírico):", rejeicao*100, "% \n")
 
 # Visualização com histograma padrão
 hist(p_values, breaks = 20, col = "skyblue", main = "Distribuição dos p-valores",
@@ -122,7 +128,7 @@ legend("topright", legend = "linha alpha(0.1)", col = "red", lwd = 2, lty = 2)
 ```
 
 ## Testes com 1 erro padrão
-alpha 5%
+__alpha 5%__
 ```{r}
 set.seed(456)  # nova simulação
 n_sim <- 10000
@@ -161,7 +167,7 @@ ggplot(df_power, aes(x = p_value)) +
 
 ```
 
-alpha 1%
+__alpha 1%__
 ```{r}
 set.seed(456)  # nova simulação
 n_sim <- 10000
@@ -200,7 +206,7 @@ ggplot(df_power, aes(x = p_value)) +
 
 ```
 
-alpha com 10%
+__alpha com 10%__
 ```{r}
 set.seed(456)  # nova simulação
 n_sim <- 10000
@@ -240,7 +246,7 @@ ggplot(df_power, aes(x = p_value)) +
 ```
 
 ## Testes com 2 erros padrão
-alpha 5%
+__alpha 5%__
 ```{r}
 set.seed(456)  # nova simulação
 n_sim <- 10000
@@ -279,7 +285,7 @@ ggplot(df_power, aes(x = p_value)) +
 
 ```
 
-alpha 1%
+__alpha 1%__
 ```{r}
 set.seed(456)  # nova simulação
 n_sim <- 10000
@@ -318,7 +324,7 @@ ggplot(df_power, aes(x = p_value)) +
 
 ```
 
-alpha com 10%
+__alpha com 10%__
 ```{r}
 set.seed(456)  # nova simulação
 n_sim <- 10000
@@ -358,7 +364,7 @@ ggplot(df_power, aes(x = p_value)) +
 ```
 
 ## Testes com 3 erros padrão
-alpha 5%
+__alpha 5%__
 ```{r}
 set.seed(456)  # nova simulação
 n_sim <- 10000
@@ -397,7 +403,7 @@ ggplot(df_power, aes(x = p_value)) +
 
 ```
 
-alpha 1%
+__alpha 1%__
 ```{r}
 set.seed(456)  # nova simulação
 n_sim <- 10000
@@ -436,7 +442,7 @@ ggplot(df_power, aes(x = p_value)) +
 
 ```
 
-alpha com 10%
+__alpha com 10%__
 ```{r}
 set.seed(456)  # nova simulação
 n_sim <- 10000
@@ -476,7 +482,7 @@ ggplot(df_power, aes(x = p_value)) +
 ```
 
 # Conclusão
-Conclui-se que
+Conclui-se que quanto maior seu alpha maior é o seu poder, quando se presupõe que H0 é verdadeira, as populações tendem a ser mais homogêneas e se comporta de forma mais previsível
 
 
 
