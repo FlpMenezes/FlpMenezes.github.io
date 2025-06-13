@@ -1,0 +1,150 @@
+---
+title: "Relatório 04"
+author: "Felipe Henrique"
+date: "01/05/2025"
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{center}
+    \includegraphics[width=2in,height=2in]{ufsj.png}\LARGE\\}
+  - \posttitle{\end{center}}
+toc-title: "Sumário"
+output:
+  
+  html_document:
+    theme: journal
+    highlight: tango
+    toc: yes
+    number_sections: yes
+    includes:
+      in_header: logo.html
+  pdf_document:
+    
+    toc: yes
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+--- 
+
+# Objetivo
+
+Este relatório tem como objetivo examinar um experimento conduzido em um Delineamento Inteiramente Casualizado (DIC). Para isso, é preciso apresentar uma análise descritiva tanto geral quanto por tratamento, incluindo medidas como média, desvio padrão e coeficiente de variação. Além disso, deve-se elaborar um gráfico boxplot para visualização dos dados. A análise deve ser complementada com uma ANOVA, expondo as hipóteses nula e alternativa, a tabela da análise de variância e uma avaliação gráfica dos resíduos.
+
+# Desenvolvimento
+
+Para trabalhar neste relatório, será necessário utilizar o banco de dados abaixo proposto pelo professor. Com ele, devemos avaliar o Erro médio de medição de 3 tipos de sensores: Ultrassônico, Infravermelho e Indutivo. Nele, temos 3 tratamentos, com 5 repetições por sensor.
+
+```{r}
+# Banco de dados
+sensores <- c(rep("Ultrassonico", 5), rep("Infravermelho", 5), rep("Indutivo", 5))
+emm <- c(1.99, 2.05, 2.41, 2.11, 2.13, 3.31, 2.94, 2.42, 
+          2.59, 2.67, 1.78, 1.65, 1.66, 1.62, 1.52)
+
+dados <- data.frame(sensores = as.factor(sensores), emm = emm)
+
+print(dados)
+
+```
+
+## Análise Descritiva
+
+Para a Análise Descritiva, foram calculadas a média (X̄), o desvio padrão (S) e o coeficiente de variação (CV), a fim de caracterizar a variabilidade e o comportamento dos dados.
+
+### Geral
+
+Portanto os valores são: média = 2.19, Desvio Padrão = 0.5272977 e Coeficiente de Variação = 24.07752. 
+
+```{r}
+
+media_geral <- mean(dados$emm)
+dp_geral <- sd(dados$emm)
+cv_geral <- 100 * dp_geral / media_geral
+
+cat("Média:", media_geral, "\nDesvio Padrão:", dp_geral, "\nCoef. de Variação (CV%):", cv_geral)
+
+```
+### Por Tratamento
+
+```{r}
+
+#por tratamento
+
+library(dplyr)
+
+dados %>%
+  group_by(sensores) %>%
+  summarise(
+    media = mean(emm),
+    desvio_padrao = sd(emm),
+    cv = 100 * sd(emm) / mean(emm)
+  )
+```
+
+### Boxplot
+
+O sensor Infravermelho apresentou os maiores valores de EMM, além de uma grande variabilidade nos dados, evidenciada pela largura da caixa e pela extensão dos bigodes. Esse comportamento indica uma menor precisão nas medições realizadas por esse tipo de sensor.
+
+Por outro lado, o sensor Indutivo demonstrou os menores valores de erro médio, com pouca variação entre as observações. Embora haja a presença de alguns outliers, sua mediana permanece baixa, sugerindo um desempenho mais estável e preciso.
+
+Já o sensor Ultrassônico ocupou uma posição intermediária, com valores de erro superiores aos do sensor Indutivo, mas inferiores aos do Infravermelho. Sua dispersão também foi moderada, com um outlier acima da mediana.
+
+De modo geral, os resultados indicam que o sensor Indutivo apresentou o melhor desempenho, seguido pelo Ultrassônico. O sensor Infravermelho, por sua vez, mostrou maior instabilidade nas medições, sendo o menos preciso entre os três avaliados.
+
+
+```{r}
+
+#boxplot
+
+boxplot(emm ~ sensores, data = dados, col = "lightgreen", 
+        main = "Boxplot do EMM por Tipo de Sensor", 
+        ylab = "Erro Medio de Medição (EMM)")
+
+
+```
+
+## Análise de Variância
+
+Na Análise de Variância, é necessário definir as hipóteses nula (H0) e alternativa (H1), apresentar a tabela da ANAVA e realizar uma avaliação gráfica dos resíduos para verificar a adequação do modelo.
+
+Para a relação das hipóteses, segue a explicação abaixo: 
+
+H0 = Os sensores têm a mesma média de EMM
+
+H1 = Ao menos um sensor se difere dos outros
+
+### ANAVA
+
+```{r}
+modelo <- aov(emm ~ sensores, data = dados)
+summary(modelo)
+
+
+```
+
+Dessa forma, os resultados indicam que o valor de p é significativamente inferior ao nível de significância adotado (Alpha = 0,05), o que permite rejeitar a hipótese nula. Isso evidencia que há, de fato, uma diferença estatisticamente relevante entre os tipos de sensores analisados.
+
+### Análise de Resíduos
+
+```{r}
+par(mfrow = c(2,2))
+plot(modelo)
+
+```
+
+O gráfico Residuals vs Fitted mostra uma distribuição dos resíduos relativamente próxima da linha zero, o que é desejável. No entanto, observa-se uma leve tendência de inclinação negativa na linha vermelha de ajuste, sugerindo possível pequena violação da suposição de linearidade. Há alguns pontos mais distantes, mas a maioria dos resíduos se concentra em torno da linha, indicando que a variabilidade dos resíduos não aumenta sistematicamente com os valores ajustados.
+
+O gráfico Q-Q indica que os resíduos seguem uma distribuição aproximadamente normal, com a maioria dos pontos alinhados sobre a linha pontilhada. Apenas os dois últimos pontos se desviam mais acentuadamente, mas esse comportamento é considerado aceitável e não compromete significativamente a normalidade dos resíduos.
+
+O gráfico Scale-Location, os resíduos padronizados elevados ao quadrado parecem estar distribuídos de forma razoavelmente homogênea, embora haja uma leve tendência crescente na linha vermelha. Isso sugere uma possível variação leve na homocedasticidade, especialmente nos valores ajustados mais altos, mas não de forma grave. No geral, não há evidência forte de heterocedasticidade.
+
+No gráfico Residuals vs Factor Levels (Constant Leverage) os resíduos estão distribuídos de maneira relativamente equilibrada entre os grupos dos sensores, com a maioria dos pontos próximos à linha zero. Não há indícios claros de violação da independência ou presença de alavancagem excessiva. A simetria e centralização dos resíduos reforçam a adequação do modelo aos dados categóricos.
+
+# Conclusão
+
+A análise realizada permitiu avaliar com clareza o desempenho de diferentes tipos de sensores quanto ao erro médio de medição, utilizando um Delineamento Inteiramente Casualizado (DIC). Por meio da análise descritiva, identificou-se que o sensor Indutivo apresentou os menores valores de EMM e menor variabilidade, destacando-se como o mais preciso entre os três. Em contrapartida, o sensor Infravermelho mostrou os maiores erros médios e a maior dispersão, indicando baixa consistência nas medições. O sensor Ultrassônico situou-se entre os dois extremos, com desempenho intermediário.
+
+A análise de variância (ANOVA) revelou que há diferença significativa entre os sensores, já que o valor de p foi inferior ao nível de significância adotado, permitindo rejeitar a hipótese nula de igualdade entre as médias. A análise gráfica dos resíduos confirmou que as premissas do modelo — como normalidade, homocedasticidade e independência dos erros — foram atendidas de forma satisfatória.
+
+Dessa forma, conclui-se que o tipo de sensor influencia significativamente o erro médio de medição, sendo o sensor Indutivo a alternativa mais precisa e confiável, conforme os dados analisados neste experimento.

@@ -45,7 +45,7 @@ Este relatório foi dividido em quatro "experimentos" com distribuições normai
 
 -α (alpha) é o nível de significância do teste, ele representa a probabilidade de cometer um erro tipo I,  ou seja é a chance de rejeitar a hipótese nula H₀ mesmo quando ela é verdadeira.
 
--Poder é a probabilidade de rejeitar a hipótese nula (H₀) quando ela é falas, é a capacidade do seu teste de encontrar essa diferença quando ela realmente existe.
+-Poder é a probabilidade de rejeitar a hipótese nula (H₀) quando ela é falsa, é a capacidade do seu teste de encontrar essa diferença quando ela realmente existe.
 
 ## Testes com distribuição normal = 90
 __grafico com alpha de 5%__ 

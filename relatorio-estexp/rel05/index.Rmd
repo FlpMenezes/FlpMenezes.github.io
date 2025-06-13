@@ -1,0 +1,314 @@
+---
+title: "Relatório 05"
+author: "Felipe Henrique"
+date: "12/05/2025"
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{center}
+    \includegraphics[width=2in,height=2in]{ufsj.png}\LARGE\\}
+  - \posttitle{\end{center}}
+toc-title: "Sumário"
+output:
+  
+  html_document:
+    theme: journal
+    highlight: tango
+    toc: yes
+    number_sections: yes
+    includes:
+      in_header: logo.html
+  pdf_document:
+    
+    toc: yes
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+--- 
+
+# Objetivo
+
+Este trabalho tem como propósito avaliar um experimento conduzido sob o Delineamento em Blocos Casualizado (DBC), uma metodologia que organiza os tratamentos em blocos homogêneos com o objetivo de reduzir a variabilidade experimental e aumentar a precisão das comparações.
+
+A abordagem inclui uma análise descritiva tanto global quanto por tratamento, considerando estatísticas como a média, o desvio padrão e o coeficiente de variação. Além disso, será construído um gráfico boxplot para facilitar a visualização dos dados. A análise será complementada com a aplicação da ANOVA, contemplando a formulação das hipóteses nula e alternativa, a apresentação da tabela de variância e a verificação das premissas do modelo por meio de gráficos de resíduos.
+
+# Desenvolvimento
+
+Deve-se analisar a eficiência de diferentes sistemas de resfriamento em placas de circuito impresso (PCIs) embarcada, com o banco de dados abaixo, que relaciona a Temperatura final após 30 minutos de operação contínua (°C) de 4 tipos de Dissipadores (Dissipador de alumínio, dissipador com ventilação forçada, dissipador com heat pipe, resfriamento termoelétrico (Peltier)), avaliando cada um em 4 modelos de placas diferentes.
+
+```{r}
+library(dplyr)
+library(gt)
+
+dados <- data.frame(
+  Placa = rep(1:5, each = 4),
+  Sistema = rep(c("Alumínio", "Ventilação", "HeatPipe", "Peltier"), 5),
+  Temperatura.Final = c(78, 72, 69, 62, 
+                        80, 73, 70, 64, 
+                        79, 74, 68, 63, 
+                        77, 71, 67, 61, 
+                        81, 75, 69, 65)
+)
+
+# Exibir tabela formatada
+dados |>
+  gt() |>
+  tab_style(
+    style = list(cell_text(weight = "bold", color = "white"),
+                 cell_fill(color = "black")),
+    locations = cells_column_labels()
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = everything())
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 1:4,
+    palette = "#f2f2f2"
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 5:8,
+    palette = "lightgreen"
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 9:12,
+    palette = "#f2f2f2"
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 13:16,
+    palette = "lightgreen"
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 17:20,
+    palette = "#f2f2f2"
+  )
+
+```
+
+
+
+## Análise Descritiva
+
+Para a Análise Descritiva, foram calculadas a média (X̄), o desvio padrão (S) e o coeficiente de variação (CV), a fim de caracterizar a variabilidade e o comportamento dos dados.
+
+### Análise Geral
+
+Estes são os valores gerais de média = 70.9, Desvio Padrão = 6.172093 e Coeficiente de Variação = 8.705350. 
+
+```{r}
+
+# Geral
+media_geral <- mean(dados$Temperatura.Final)
+dp_geral <- sd(dados$Temperatura.Final)
+cv_geral <- (dp_geral / media_geral) * 100
+
+tabela_estatisticas <- data.frame(
+  Estatística = c("Média Geral", "Desvio Padrão Geral", "Coeficiente de Variação (%)"),
+  Valor = c(media_geral, dp_geral, cv_geral)
+)
+
+tabela_estatisticas |>
+  gt() |>
+  tab_style(
+    style = list(cell_text(weight = "bold", color = "white"),
+                 cell_fill(color = "black")),
+    locations = cells_column_labels()
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = everything())
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 1,
+    palette = "#f2f2f2"
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 2,
+    palette = "#f2f2f2"
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 3,
+    palette = "#f2f2f2"
+  )
+
+```
+
+### Análise por Tratamento
+
+Agora, é possível ver a Média, o Desvio Padrão e o Coeficiente de Variância de cada tipo de dissipador de calor.
+
+```{r}
+
+# Por Tratamento
+descr_trat <- dados %>%
+  group_by(Sistema) %>%
+  summarise(
+    Média = round(mean(Temperatura.Final), 3),
+    Desvio_Padrão = round(sd(Temperatura.Final), 3),
+    CV = round((sd(Temperatura.Final) / mean(Temperatura.Final)) * 100, 3)
+  )
+
+
+descr_trat |>
+  gt() |>
+  tab_style(
+    style = list(cell_text(weight = "bold", color = "white"),
+                 cell_fill(color = "black")),
+    locations = cells_column_labels()
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = everything())
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 1,
+    palette = "#f2f2f2"
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 2,
+    palette = "#f2f2f2"
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 3,
+    palette = "#f2f2f2"
+  )|>
+  data_color(
+    columns = everything(),
+    rows = 4,
+    palette = "#f2f2f2"
+  )
+
+
+
+```
+
+### Boxplot
+
+O boxplot apresentado abaixo compara a temperatura final alcançada por quatro sistemas de resfriamento (Alumínio, HeatPipe, Peltier e Ventilação) após 30 minutos de operação contínua. Observa-se que o sistema Peltier apresentou a menor mediana de temperatura, indicando o melhor desempenho na dissipação térmica entre os sistemas avaliados. Em contraste, o sistema de Alumínio teve a maior mediana, evidenciando menor eficiência.
+
+Os sistemas HeatPipe e Ventilação apresentaram desempenhos intermediários, com valores medianos próximos, mas ainda superiores ao Peltier. Além disso, todos os sistemas demonstraram baixa variabilidade nos resultados, o que sugere consistência nas medições realizadas.
+
+A separação clara entre as caixas dos diferentes sistemas sugere que há diferenças significativas no desempenho térmico entre eles, o que será confirmado posteriormente com a análise de variância (ANOVA). Em síntese, os resultados visuais indicam que o sistema Peltier é o mais eficaz na redução da temperatura, enquanto o sistema de Alumínio é o menos eficiente.
+
+
+```{r}
+
+# 3. Boxplot dos tratamentos
+
+boxplot(Temperatura.Final ~ Sistema, data = dados,
+        col = c("lightblue", "lightgreen", "salmon"),
+        main = "Temperatura final após 30 minutos de operação contínua",
+        ylab = "Temperatura (°C)", xlab = "Sistemas")
+
+```
+
+## Análise de Variância
+
+Na Análise de Variância, é necessário definir as hipóteses nula (H0) e alternativa (H1), apresentar a tabela da ANAVA e realizar uma avaliação gráfica dos resíduos para verificar a adequação do modelo.
+
+Para a relação das hipóteses, segue a explicação abaixo: 
+
+H0 = As temperaturas têm a mesma média.
+
+H1 = Pelo menos uma média de sistema é diferente das outras.
+
+
+```{r}
+
+# 4. ANOVA - Modelo com blocos
+
+modelo <- aov(Temperatura.Final ~ Sistema, data = dados)
+summary(modelo)
+
+#Converter SUMMARY para Data Frame
+data_summary <- data.frame(unclass(summary(modelo)), check.names = FALSE)
+
+print(data_summary)
+
+```
+
+
+```{r}
+
+library(gt)
+
+# Valor fictício para x (caso ainda queira visualizar)
+library(gt)
+
+# Valor fictício para x como NA
+x <- NA
+
+# Criar o data frame
+data_summary2 <- data.frame(
+  Fonte = c("Sistema", "Resíduo"),
+  GL = c(3, 16),
+  `Soma dos Quadrados` = c(688.6, 35.2),
+  `Quadrado Médio` = c(229.5333, 2.2000),
+  `Valor.F` = c(104.3333, x),
+  `Pr(>F)` = c(1.021746e-10, x)
+)
+
+# Aplicar formatação GT
+data_summary2 |>
+  gt() |>
+  tab_header(title = "Tabela ANOVA - DBC (Sistemas de Dissipadores)") |>
+  tab_style(
+    style = list(
+      cell_text(weight = "bold", color = "white"),
+      cell_fill(color = "black")
+    ),
+    locations = cells_column_labels()
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = everything())
+  ) |>
+  tab_style(
+    style = cell_fill(color = "#f2f2f2"),
+    locations = cells_body(rows = 1)
+  ) |>
+  tab_style(
+    style = cell_fill(color = "#f2f2f2"),
+    locations = cells_body(rows = 2)
+  )
+
+
+```
+
+Considerando um nível de significância usual de alpha = 0,05, o valor-p obtido é muito inferior a alpha, o que nos leva a rejeitar a hipótese nula (H0). Isso significa que há evidências estatísticas fortes de que pelo menos um dos sistemas de dissipação possui desempenho significativamente diferente dos demais em termos de temperatura final.
+
+## Análise gráfica dos resíduos
+
+Resíduos vs Ajustados: os pontos estão distribuídos de forma aleatória ao redor da linha horizontal, sem padrão evidente, o que sugere que não há violação da suposição de homocedasticidade (variância constante dos erros).
+
+Q-Q Plot (Quantis-Quantis): os resíduos seguem aproximadamente a linha reta, indicando que a suposição de normalidade dos resíduos é atendida. Pequenas desvios nas extremidades são comuns e não comprometem a análise.
+
+Scale-Location: a dispersão dos resíduos padronizados ao longo dos valores ajustados é uniforme, o que reforça a homogeneidade de variância.
+
+Resíduos vs Níveis do Fator (Sistema): não há padrões sistemáticos, e os resíduos estão bem distribuídos entre os níveis do fator, apoiando a independência dos erros e homogeneidade entre tratamentos.
+
+```{r}
+# 5. Análise resíduos
+
+par(mfrow = c(2, 2))
+plot(modelo)
+
+```
+
+# Conclusão
+
+A análise realizada indica que o tipo de sistema de resfriamento influencia significativamente a temperatura final das placas, com destaque para o sistema Peltier, que apresentou o melhor desempenho térmico. A ANOVA confirmou a existência de diferenças estatísticas entre os tratamentos, e os diagnósticos dos resíduos mostraram que os pressupostos do modelo foram atendidos, validando os resultados obtidos. Portanto, o Delineamento em Blocos Casualizado foi apropriado para este experimento, proporcionando maior precisão na comparação entre os sistemas avaliados.
+
