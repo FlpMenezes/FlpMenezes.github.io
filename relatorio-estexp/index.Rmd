@@ -167,9 +167,6 @@ Relatórios desenvolvidos:
 - [Relatório 01 (07/04/2025)](./rel01/index.html){target="_blank"}
 - [Relatório 02 (10/04/2025)](./rel02/index.html){target="_blank"}
 - [Relatório 03 (17/04/2025)](./rel03/index.html){target="_blank"}
-<<<<<<< HEAD
-- [Relatório 04 (17/04/2025)](./rel04/index.html){target="_blank"}
-- [Relatório 05 (17/04/2025)](./rel05/index.html){target="_blank"}
-=======
-- [Relatório 04 (05/05/2025)](./rel04/index.html){target="_blank"}
->>>>>>> 01a1725ccbc5eba373205e912f2727fb33b738d2
+- [Relatório 04 (01/05/2025)](./rel04/index.html){target="_blank"}
+- [Relatório 05 (12/05/2025)](./rel05/index.html){target="_blank"}
+
