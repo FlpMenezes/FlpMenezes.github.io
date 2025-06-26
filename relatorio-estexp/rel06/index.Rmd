@@ -1,0 +1,201 @@
+---
+title: "Relatório 06"
+author: "Felipe Henrique"
+date: "22/05/2025"
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{center}
+    \includegraphics[width=2in,height=2in]{ufsj.png}\LARGE\\}
+  - \posttitle{\end{center}}
+toc-title: "Sumário"
+output:
+  
+  html_document:
+    theme: journal
+    highlight: tango
+    toc: yes
+    number_sections: yes
+    includes:
+      in_header: logo.html
+  pdf_document:
+    
+    toc: yes
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+--- 
+
+# Objetivo
+Este relatório tem o objetivo de estudar e aplicar o procedimento de comparações múltiplas de Tukey (HSD – Honest Significant Difference) utilizando a linguagem R, compreendendo seus fundamentos analíticos e interpretando seus resultados gráficos e numéricos
+
+# Desenvolvimento
+## Ideias do teste Tuckey
+O **Teste de Tukey HSD (Honest Significant Difference)** é utilizado após uma ANOVA indicar diferença significativa entre grupos. Ele permite identificar quais pares de médias diferem entre si, controlando o erro tipo I nas comparações múltiplas
+
+## Hipóteses
+
+Para cada par de grupos \( G_i \) e \( G_j \), testamos:
+
+- **Hipótese nula** \( H_0 \): \( \mu_i = \mu_j \)
+- **Hipótese alternativa** \( H_1 \): \( \mu_i \neq \mu_j \)
+
+## Estatística do Teste
+
+A estatística utilizada é:
+
+\[
+q = \frac{|\bar{y}_i - \bar{y}_j|}{\sqrt{\frac{QM_{\text{resíduo}}}{n}}}
+\]
+
+Onde:
+
+- \( \bar{y}_i, \bar{y}_j \): médias dos grupos \( i \) e \( j \)
+- \( QM_{\text{resíduo}} \): quadrado médio do erro da ANOVA
+- \( n \): número de observações por grupo (assumindo iguais)
+
+## Decisão
+
+O valor calculado de \( q \) é comparado com o valor crítico \( q_{\text{crítico}} \) da distribuição studentizada da amplitude (distribuição de Tukey), considerando:
+
+- \( k \): número total de grupos
+- \( v \): graus de liberdade do resíduo
+- \( \alpha \): nível de significância (ex: 0,05)
+
+**Regra de decisão:**
+
+- Se \( q \leq q_{\text{crítico}} \): não rejeita \( H_0 \) → **sem diferença significativa**
+- Se \( q > q_{\text{crítico}} \): rejeita \( H_0 \) → **diferença significativa**
+
+
+n: número de observações por grupo (em caso de grupos com tamanhos iguais)
+
+# Exemplo prático
+Tabela de dados (DBC)
+```{r carregando-pacotes, message=FALSE, warning=FALSE}
+library(dplyr)
+library(gt)
+
+dados <- data.frame(
+  Placa = rep(1:5, each = 4),
+  Sistema = rep(c("Alumínio", "Ventilação", "HeatPipe", "Peltier"), times = 5),
+  Temperatura.Final = c(78,72,69,62,
+                        80,73,70,64,
+                        79,74,68,63,
+                        77,71,67,61,
+                        81,75,69,65)
+)
+dados |>
+  gt() |>
+  tab_style(
+    style = list(cell_text(weight = "bold", color = "white"),
+                 cell_fill(color = "black")),
+    locations = cells_column_labels()
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = everything())
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 1:4,
+    palette = "#f2f2f2"
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 5:8,
+    palette = "lightgreen"
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 9:12,
+    palette = "#f2f2f2"
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 13:16,
+    palette = "lightgreen"
+  ) |>
+  data_color(
+    columns = everything(),
+    rows = 17:20,
+    palette = "#f2f2f2"
+  )
+
+```
+Teste ANOVA
+```{r, message=FALSE, warning=FALSE}
+anova_result <- aov(Temperatura.Final ~ Sistema, data = dados)
+summary(anova_result)
+library(dplyr)
+library(gt)
+
+# Dados do Tukey (você pode colar direto, ou usar seu objeto TukeyHSD)
+tukey_df <- data.frame(
+  Comparacao = c("HeatPipe - Alumínio", "Peltier - Alumínio", "Ventilação - Alumínio",
+                 "Peltier - HeatPipe", "Ventilação - HeatPipe", "Ventilação - Peltier"),
+  Diff = c(-10.4, -16.0, -6.0, -5.6, 4.4, 10.0),
+  Lwr = c(-13.08, -18.68, -8.68, -8.28, 1.72, 7.32),
+  Upr = c(-7.72, -13.32, -3.32, -2.92, 7.08, 12.68),
+  `p.adj` = c(0, 0, 4.77e-5, 1.05e-4, 0.00126, 1e-7)
+)
+
+# Adiciona coluna indicando se é significativo
+tukey_df <- tukey_df %>%
+  mutate(Significativo = ifelse(`p.adj` < 0.05, "Sim", "Não"))
+
+# Criar a tabela formatada com gt
+tabela_gt <- tukey_df %>%
+  gt() %>%
+  tab_header(
+    title = "Resultados do Teste de Tukey HSD",
+    subtitle = "Comparações múltiplas entre sistemas"
+  ) %>%
+  cols_label(
+    Comparacao = "Par de Sistemas",
+    Diff = "Diferença",
+    Lwr = "Limite Inferior",
+    Upr = "Limite Superior",
+    `p.adj` = "p-valor Ajustado",
+    Significativo = "Diferença Significativa?"
+  ) %>%
+  fmt_number(
+    columns = vars(Diff, Lwr, Upr),
+    decimals = 2
+  ) %>%
+  fmt_scientific(
+    columns = vars(`p.adj`),
+    decimals = 2
+  ) %>%
+  tab_style(
+    style = list(
+      cell_fill(color = "lightgreen")
+    ),
+    locations = cells_body(
+      columns = vars(Significativo),
+      rows = Significativo == "Sim"
+    )
+  )
+
+# Mostrar a tabela
+tabela_gt
+
+
+# --- Teste de Tukey HSD ---
+tukey_result <- TukeyHSD(anova_result)
+
+# --- Gráfico do Teste de Tukey ---
+plot(tukey_result, las = 1, col = "darkblue")
+title(main = "Tukey HSD - Comparações Múltiplas entre Sistemas")
+
+
+
+```
+
+# Conclusão
+
+O Teste de Tukey HSD é uma ferramenta estatística amplamente utilizada para realizar comparações múltiplas entre médias, especialmente após uma ANOVA indicar que há diferenças significativas entre grupos. Sua principal utilidade está em identificar exatamente quais pares de grupos diferem entre si, controlando o erro do tipo I de forma eficiente.
+
+Os resultados demonstraram que todos os pares de sistemas apresentaram diferenças estatisticamente significativas, indicando que cada sistema teve um desempenho térmico distinto.As comparações revelam que, do ponto de vista estatístico, os quatro sistemas são diferentes entre si em termos de desempenho, o que reforça a importância do uso do teste de Tukey em análises comparativas como esta.
