@@ -1,0 +1,182 @@
+---
+title: "Relatório 07"
+author: "Felipe Henrique"
+date: "29/05/2025"
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{center}
+    \includegraphics[width=2in,height=2in]{ufsj.png}\LARGE\\}
+  - \posttitle{\end{center}}
+toc-title: "Sumário"
+output:
+  
+  html_document:
+    theme: journal
+    highlight: tango
+    toc: yes
+    number_sections: yes
+    includes:
+      in_header: logo.html
+  pdf_document:
+    
+    toc: yes
+    number_sections: yes
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+# Objetivo
+
+Simular um experimento com quatro tipos de controladores (PID, AutoPID, Fuzzy e LQR), analisar os dados via ANOVA, verificar as pressuposições do modelo (normalidade, homocedasticidade, independência) por meio de testes estatísticos e gráficos, e aplicar uma transformação logarítmica caso as pressuposições sejam violadas (e elas propositalmente serão)
+
+# Desenvolvimento
+
+Os dados iram criar propositalmente heterocedasticidade (variâncias diferentes), para que possamos ver o efeito nos testes de pressupostos
+
+## Simulação dos dados 
+| Tratamento | Média | Desvio Padrão |
+| ---------- | ----- | ------------- |
+| PID        | 1.2   | 0.1           |
+| AutoPID    | 1.0   | 0.3           |
+| Fuzzy      | 0.8   | 0.15          |
+| LQR        | 0.9   | 0.5           |
+
+```{r, carregando-pacotes, message=FALSE, warning=FALSE}
+# Instala e carrega pacotes, se necessário
+if (!require("dplyr")) install.packages("dplyr")
+if (!require("gt")) install.packages("gt")
+library(dplyr)
+library(gt)
+library(glue)
+
+# Define tratamentos
+tratamentos <- rep(c("PID", "AutoPID", "Fuzzy", "LQR"), each = 5)
+
+# Simula os valores
+set.seed(42)
+valores <- c(
+  rnorm(5, mean = 1.2, sd = 0.1),
+  rnorm(5, mean = 1.0, sd = 0.3),
+  rnorm(5, mean = 0.8, sd = 0.15),
+  rnorm(5, mean = 0.9, sd = 0.5)
+)
+
+# Cria data frame
+dados <- data.frame(
+  Tratamento = tratamentos,
+  Repeticao = rep(1:5, times = 4),
+  EMA = round(valores, 3)
+)
+
+# Gera tabela com 'gt'
+dados %>%
+  arrange(Tratamento, Repeticao) %>%
+  gt() %>%
+  tab_header(
+    title = "Tabela de Erro Médio Absoluto por Tratamento"
+  ) %>%
+  cols_label(
+    Tratamento = "Controlador",
+    Repeticao = "Repetição",
+    EMA = "Erro Médio Absoluto"
+  )
+
+# Instala e carrega pacotes necessários
+pacotes <- c("car", "nortest", "lmtest", "ggplot2")
+instalar <- pacotes[!pacotes %in% installed.packages()]
+if (length(instalar)) install.packages(instalar)
+invisible(lapply(pacotes, library, character.only = TRUE))
+
+set.seed(42) # Reprodutibilidade
+
+# ------------------------
+# 1. SIMULAÇÃO DO EXPERIMENTO
+# ------------------------
+
+tratamento <- rep(c("PID", "AutoPID", "Fuzzy", "LQR"), each = 5)
+ema <- c(
+  rnorm(5, mean = 1.2, sd = 0.1),
+  rnorm(5, mean = 1.0, sd = 0.3),
+  rnorm(5, mean = 0.8, sd = 0.15),
+  rnorm(5, mean = 0.9, sd = 0.5)
+)
+dados <- data.frame(Tratamento = tratamento, EMA = ema)
+
+# ------------------------
+# 2. AJUSTE DO MODELO ANOVA ORIGINAL
+# ------------------------
+
+modelo <- aov(EMA ~ Tratamento, data = dados)
+residuos <- residuals(modelo)
+ajustados <- fitted(modelo)
+
+# Cria data.frame auxiliar para gráficos
+res_df <- data.frame(Tratamento = dados$Tratamento, Residuos = residuos, Ajustados = ajustados)
+
+
+# ------------------------
+# 4. TESTES DE PRESSUPOSTOS
+# ------------------------
+
+cat("Testes estatísticos do modelo original")
+print(shapiro.test(residuos))
+print(bartlett.test(EMA ~ Tratamento, data = dados))
+print(leveneTest(EMA ~ Tratamento, data = dados))
+print(durbinWatsonTest(modelo))
+
+# ------------------------
+# 3. GRÁFICOS DE DIAGNÓSTICO - MODELO ORIGINAL
+# ------------------------
+
+par(mfrow = c(2, 2))  # Layout de 4 plots
+
+hist(residuos, main = "Histograma dos Resíduos", xlab = "Resíduos", col = "lightblue", border = "black")
+qqnorm(residuos, main = "QQ-Plot dos Resíduos")
+qqline(residuos, col = "red")
+plot(res_df$Ajustados, res_df$Residuos, main = "Resíduos vs Ajustados",
+     xlab = "Valores Ajustados", ylab = "Resíduos", pch = 19)
+abline(h = 0, col = "red", lty = 2)
+boxplot(Residuos ~ Tratamento, data = res_df,
+        main = "Resíduos vs Tratamento", xlab = "Tratamento", ylab = "Resíduos", col = "lightgray")
+
+
+```
+
+## Testes de Pressuposições
+
+| Teste                | Objetivo                                    | Resultado Esperado p>0.05        |
+| -------------------- | ------------------------------------------- | -------------------------------- |
+| `shapiro.test()`     | Teste de normalidade dos resíduos           | ✔ Se normalidade for válida      |
+| `bartlett.test()`    | Teste de igualdade de variâncias (sensível) | ✖ Se variâncias forem diferentes |
+| `leveneTest()`       | Teste robusto de igualdade de variâncias    | ✖ Se variâncias forem diferentes |
+| `durbinWatsonTest()` | Teste de independência dos resíduos         | ✔ Valor próximo de 2             |
+
+São gerados quatro gráficos para diagnosticar o modelo:
+
+- Histograma dos resíduos – verifica a simetria/normalidade.
+
+- QQ-plot – avalia se os resíduos seguem a distribuição normal.
+
+- Resíduos vs Ajustados – avalia homogeneidade das variâncias.
+
+- Resíduos vs Tratamento – verifica padrão de variância entre grupos.
+
+## Resultado
+
+Espera-se ver dispersões desiguais no gráfico (3) e (4), indicando necessidade de transformação.
+
+
+# Conclusão
+
+A análise realizada demonstra a eficácia da ANOVA como uma ferramenta estatística para detectar diferenças entre grupos experimentais. A ANOVA baseia-se em pressupostos fundamentais: normalidade dos resíduos, homogeneidade das variâncias (homocedasticidade) e independência dos erros. Quando essas condições são atendidas, a ANOVA fornece resultados confiáveis e interpretações robustas.
+
+No entanto, como ilustrado neste experimento simulado, a violação desses pressupostos compromete a validade da análise. A introdução intencional de variâncias diferentes entre os grupos permitiu observar como os testes de Bartlett e Levene sinalizam a heterocedasticidade, enquanto os gráficos de resíduos reforçam essa visualização com padrões de dispersão desigual.
+
+A ANOVA continua sendo útil mesmo quando os dados brutos violam seus pressupostos, desde que sejam adotadas estratégias adequadas de transformação ou uso de modelos alternativos (como ANOVA robusta ou modelos não paramétricos, em casos extremos).
+
+Portanto, este relatório reforça que a ANOVA é eficaz e sensível, mas não é à prova de erros: ela depende fortemente das condições sob as quais é aplicada. Identificar e tratar adequadamente essas violações é essencial para que os resultados reflitam fielmente a realidade do sistema analisado.
+
+

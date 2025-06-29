@@ -38,7 +38,7 @@ A abordagem inclui uma análise descritiva tanto global quanto por tratamento, c
 
 Deve-se analisar a eficiência de diferentes sistemas de resfriamento em placas de circuito impresso (PCIs) embarcada, com o banco de dados abaixo, que relaciona a Temperatura final após 30 minutos de operação contínua (°C) de 4 tipos de Dissipadores (Dissipador de alumínio, dissipador com ventilação forçada, dissipador com heat pipe, resfriamento termoelétrico (Peltier)), avaliando cada um em 4 modelos de placas diferentes.
 
-```{r}
+```{r carregando-pacotes, message=FALSE, warning=FALSE}
 library(dplyr)
 library(gt)
 
