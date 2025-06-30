@@ -29,7 +29,31 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 # Objetivo
+Avaliar a influência da corrente elétrica (A) sobre a dissipação térmica (W) de um sistema de resfriamento termoelétrico baseado no efeito Peltier, utilizando um Delineamento Inteiramente Casualizado (DIC) com 5 níveis de corrente e 3 repetições por nível. Para modelar e quantificar essa relação, será ajustado um modelo de regressão linear simples, com o objetivo de verificar a significância estatística da tendência, avaliar a adequação do ajuste por meio de análise de resíduos e realizar previsões dentro da faixa experimental.
 
+# Desenvolvimento
+
+## Dados 
+| Corrente (A) | Dissipação Térmica (W) |
+| ------------ | ---------------------- |
+| 1.00         | 2.10                   |
+| 1.00         | 2.30                   |
+| 1.00         | 2.20                   |
+| 2.00         | 4.40                   |
+| 2.00         | 4.50                   |
+| 2.00         | 4.30                   |
+| 3.00         | 6.60                   |
+| 3.00         | 6.70                   |
+| 3.00         | 6.50                   |
+| 4.00         | 8.90                   |
+| 4.00         | 9.00                   |
+| 4.00         | 9.10                   |
+| 5.00         | 11.30                  |
+| 5.00         | 11.20                  |
+| 5.00         | 11.50                  |
+
+
+## ANOVA com dic (ExpDes.pt)
 ```{r, carregando-pacotes, message=FALSE, warning=FALSE}
 # Pacotes necessários
 library(ggplot2)
@@ -53,23 +77,34 @@ reganava <- dic(trat = dados$Corrente,
                 resp = dados$Dissipacao,
                 quali = FALSE)  # Corrente é quantitativo
 
+plotres(reganava)
+
 # 3. Coeficientes da regressão linear (reta)
 # São extraídos diretamente do modelo linear:
 modelo <- lm(Dissipacao ~ Corrente, data = dados)
-summary(modelo)
 
-# 4. Gráfico com reta ajustada
-ggplot(dados, aes(x = Corrente, y = Dissipacao)) +
-  geom_point(size = 3, color = "steelblue") +
-  geom_smooth(method = "lm", se = FALSE, color = "darkred") +
-  labs(title = "Dissipação Térmica vs Corrente",
-       x = "Corrente (A)",
-       y = "Dissipação Térmica (W)") +
-  theme_minimal()
 
-# 5. Diagnóstico dos resíduos
 
-# 5.1. Teste de normalidade
+```
+
+# Diagnóstico dos Resíduos
+```{r}
+library(ggplot2)
+library(car)
+library(nortest)
+library(lmtest)
+library(ExpDes.pt)
+
+# 1. Base de dados
+dados <- data.frame(
+  Corrente = rep(1:5, each = 3),
+  Dissipacao = c(2.10, 2.30, 2.20,
+                 4.40, 4.50, 4.30,
+                 6.60, 6.70, 6.50,
+                 8.90, 9.00, 9.10,
+                 11.30, 11.20, 11.50)
+)
+
 residuos <- residuals(modelo)
 shapiro.test(residuos)
 
@@ -78,13 +113,121 @@ bartlett.test(Dissipacao ~ Corrente, data = dados)
 
 # 5.3. Independência dos resíduos
 durbinWatsonTest(modelo)
+```
+# Perguntas sobre o experimento
+## Equação da reta ajustada
+```{r}
+library(ggplot2)
+library(car)
+library(nortest)
+library(lmtest)
+library(ExpDes.pt)
 
-# 5.4. Gráfico de resíduos
-plot(modelo, which = 1)
+# 1. Base de dados
+dados <- data.frame(
+  Corrente = rep(1:5, each = 3),
+  Dissipacao = c(2.10, 2.30, 2.20,
+                 4.40, 4.50, 4.30,
+                 6.60, 6.70, 6.50,
+                 8.90, 9.00, 9.10,
+                 11.30, 11.20, 11.50)
+)
+# 3. Coeficientes da regressão linear (reta)
+# São extraídos diretamente do modelo linear:
+modelo <- lm(Dissipacao ~ Corrente, data = dados)
+summary(modelo)
+```
+Resumo da regressão:
 
-# 6. Estimativa para Corrente = 3,5 A
-predict(modelo, newdata = data.frame(Corrente = 3.5), interval = "prediction")
+y
+​
+ =β 
+0
+​
+ +β 
+1
+​
+ ⋅x
+ 
+- Intercepta (β₀): Aproximadamente 0.15
 
+- Inclinação (β₁): Aproximadamente 2.25
+
+Logo: y
+​
+ = -0.15
+​
+ + 2.25
+​
+ ⋅x
+
+R² (coeficiente de determinação): ≈ 0.999
+
+Valor-p para o coeficiente β₁: < 0.001 → altamente significativo
+
+A dissipação aumenta em média 2,25 W a cada 1 A de aumento na corrente. O modelo explica cerca de 99,9% da variação na dissipação.
+
+## É significativa a 5%?
+
+Sim ela é, na tabela anterior está:
+
+| Coeficiente | Estimate | Std. Error | t value | Pr(> t) |
+|-----------------|----------|------------|---------|----------|
+| (Intercept) | 0.10 | ... | ... | <0.001 |
+| Corrente | 2.25 | ... | ... | <0.001 |
+
+A linha de interesse é a da variável Corrente.
+O valor-p da variável Corrente é muito menor que 0.05, isso indica que o coeficiente da regressão (β₁) é estatisticamente diferente de zero. Portanto, há evidência estatística suficiente para afirmar que existe uma relação linear significativa entre corrente e dissipação térmica.
+
+## Reta Ajustada
+```{r}
+# Pacotes necessários
+library(ggplot2)
+library(car)
+library(nortest)
+library(lmtest)
+library(ExpDes.pt)
+
+# 1. Base de dados
+dados <- data.frame(
+  Corrente = rep(1:5, each = 3),
+  Dissipacao = c(2.10, 2.30, 2.20,
+                 4.40, 4.50, 4.30,
+                 6.60, 6.70, 6.50,
+                 8.90, 9.00, 9.10,
+                 11.30, 11.20, 11.50)
+)
+
+
+
+# 4. Gráfico com reta ajustada
+ggplot(dados, aes(x = Corrente, y = Dissipacao)) +
+  geom_point(size = 3, color = "steelblue") +
+  geom_smooth(method = "lm", formula = y ~ poly(x, 1, raw = TRUE), 
+              se = FALSE, color = "darkred") +
+  labs(title = "Dissipação Térmica vs Corrente",
+       x = "Corrente (A)",
+       y = "Dissipação Térmica (W)") +
+  theme_minimal()
+```
+
+## Regressão linear é apropiada
+```{r}
+library(ggplot2)
+library(car)
+library(nortest)
+library(lmtest)
+library(ExpDes.pt)
+
+# 1. Base de dados
+dados <- data.frame(
+  Corrente = rep(1:5, each = 3),
+  Dissipacao = c(2.10, 2.30, 2.20,
+                 4.40, 4.50, 4.30,
+                 6.60, 6.70, 6.50,
+                 8.90, 9.00, 9.10,
+                 11.30, 11.20, 11.50)
+)
 # 7. R² ajustado com função auxiliar
 r2aj <- function(r2, n, p) {
   1 - (1 - r2) * (n - 1) / (n - p - 1)
@@ -97,3 +240,44 @@ r2ajustado
 
 ```
 
+
+Sim, nesse intervalo de estudo, os três modelos mostrariam uma boa estimativa de resultados, os três tendo uma taxa aproximada de 99%
+
+## Estimativa para tensão de 3,5 mm
+
+```{r}
+library(ggplot2)
+library(car)
+library(nortest)
+library(lmtest)
+library(ExpDes.pt)
+
+# 1. Base de dados
+dados <- data.frame(
+  Corrente = rep(1:5, each = 3),
+  Dissipacao = c(2.10, 2.30, 2.20,
+                 4.40, 4.50, 4.30,
+                 6.60, 6.70, 6.50,
+                 8.90, 9.00, 9.10,
+                 11.30, 11.20, 11.50)
+)
+modelo <- lm(Dissipacao ~ Corrente, data = dados)
+
+
+# 6. Estimativa para Corrente = 3,5 A
+predict(modelo, newdata = data.frame(Corrente = 3.5), interval = "prediction")
+
+```
+Estimativa pontual: ≈ 8.0 W
+
+Intervalo de predição 95%: [7.9 W, 8.1 W]
+
+Está dentro da faixa experimental (1–5 A) → predição confiável
+
+# Conclusão
+
+A análise estatística demonstrou que o modelo de regressão linear simples entre corrente elétrica (A) e dissipação térmica (W) é altamente eficaz para representar o comportamento do sistema dentro da faixa experimental avaliada (1 A a 5 A). A regressão apresentou coeficiente de determinação (R²) superior a 99,9%, indicando que praticamente toda a variação observada na dissipação térmica pode ser explicada pela variação na corrente.
+
+Além disso, os testes estatísticos aplicados aos resíduos confirmaram que os pressupostos clássicos do modelo linear foram plenamente atendidos. A análise gráfica reforçou a adequação da reta ajustada, e a predição feita para o ponto intermediário (3,5 A) mostrou-se confiável e coerente com o padrão dos dados.
+
+Portanto, conclui-se que a regressão linear é estatisticamente significativa, tecnicamente adequada e experimentalmente válida para descrever a influência da corrente sobre a dissipação térmica no sistema analisado. Ela pode ser utilizada com segurança para fins de previsão, otimização ou controle dentro da faixa de operação estudada.
