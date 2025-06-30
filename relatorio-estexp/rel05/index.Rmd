@@ -38,7 +38,7 @@ A abordagem inclui uma análise descritiva tanto global quanto por tratamento, c
 
 Deve-se analisar a eficiência de diferentes sistemas de resfriamento em placas de circuito impresso (PCIs) embarcada, com o banco de dados abaixo, que relaciona a Temperatura final após 30 minutos de operação contínua (°C) de 4 tipos de Dissipadores (Dissipador de alumínio, dissipador com ventilação forçada, dissipador com heat pipe, resfriamento termoelétrico (Peltier)), avaliando cada um em 4 modelos de placas diferentes.
 
-```{r carregando-pacotes, message=FALSE, warning=FALSE}
+```{r carregando-pacotes, echo=TRUE, message=FALSE, warning=FALSE}
 library(dplyr)
 library(gt)
 
@@ -102,7 +102,7 @@ Para a Análise Descritiva, foram calculadas a média (X̄), o desvio padrão (S
 
 Estes são os valores gerais de média = 70.9, Desvio Padrão = 6.172093 e Coeficiente de Variação = 8.705350. 
 
-```{r}
+```{r echo=TRUE}
 
 # Geral
 media_geral <- mean(dados$Temperatura.Final)
@@ -147,7 +147,7 @@ tabela_estatisticas |>
 
 Agora, é possível ver a Média, o Desvio Padrão e o Coeficiente de Variância de cada tipo de dissipador de calor.
 
-```{r}
+```{r echo=TRUE}
 
 # Por Tratamento
 descr_trat <- dados %>%
@@ -204,7 +204,7 @@ Os sistemas HeatPipe e Ventilação apresentaram desempenhos intermediários, co
 A separação clara entre as caixas dos diferentes sistemas sugere que há diferenças significativas no desempenho térmico entre eles, o que será confirmado posteriormente com a análise de variância (ANOVA). Em síntese, os resultados visuais indicam que o sistema Peltier é o mais eficaz na redução da temperatura, enquanto o sistema de Alumínio é o menos eficiente.
 
 
-```{r}
+```{r echo=TRUE}
 
 # 3. Boxplot dos tratamentos
 
@@ -226,7 +226,7 @@ H0 = As temperaturas têm a mesma média.
 H1 = Pelo menos uma média de sistema é diferente das outras.
 
 
-```{r}
+```{r echo=TRUE}
 
 # 4. ANOVA - Modelo com blocos
 
@@ -241,7 +241,7 @@ print(data_summary)
 ```
 
 
-```{r}
+```{r echo=TRUE}
 
 library(gt)
 
@@ -300,7 +300,7 @@ Scale-Location: a dispersão dos resíduos padronizados ao longo dos valores aju
 
 Resíduos vs Níveis do Fator (Sistema): não há padrões sistemáticos, e os resíduos estão bem distribuídos entre os níveis do fator, apoiando a independência dos erros e homogeneidade entre tratamentos.
 
-```{r}
+```{r echo=TRUE}
 # 5. Análise resíduos
 
 par(mfrow = c(2, 2))

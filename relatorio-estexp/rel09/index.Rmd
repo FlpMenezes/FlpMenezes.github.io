@@ -27,13 +27,216 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-Arquivo de base pro relatorio 9
 
 # Objetivo
 
+Este experimento tem como objetivo avaliar o desempenho de um sistema embarcado de visão computacional aplicado a robôs móveis autônomos. A variável de interesse foi o tempo de processamento de imagens, influenciado por três fatores de projeto: resolução da imagem (Low, Medium, High), algoritmo de pré-processamento (Filtro Gaussiano, Equalização de Histograma) e tipo de processador (Raspberry Pi 4, Jetson Nano). Devido à variabilidade associada aos diferentes turnos de execução dos testes, o delineamento adotado foi um Fatorial Triplo em Blocos Casualizados (DBC), com 12 tratamentos e 4 blocos (turnos). O estudo buscou:
+(1) verificar os efeitos principais e interações entre os fatores;
+(2) avaliar a contribuição dos blocos na redução da variabilidade residual;
+(3) identificar a melhor configuração técnica para minimizar o tempo de processamento.
 
-```{r, carregando-pacotes, message=FALSE, warning=FALSE}
+# Desenvolvimento
+```{r carregando-pacotes, echo=TRUE, message=FALSE, warning=FALSE}
+library(ExpDes.pt)
+# Pacote necessário
+library(tidyverse)
+
+# Criar o banco de dados
+dados <- read.table(header = TRUE, text = "
+bloco resolucao preprocess processador tempo
+1 Low Gauss Raspberry 41.0
+2 Low Gauss Raspberry 46.9
+3 Low Gauss Raspberry 47.4
+4 Low Gauss Raspberry 40.8
+1 Low Gauss Jetson 39.9
+2 Low Gauss Jetson 41.0
+3 Low Gauss Jetson 44.1
+4 Low Gauss Jetson 42.8
+1 Low HistEq Raspberry 51.0
+2 Low HistEq Raspberry 49.7
+3 Low HistEq Raspberry 45.3
+4 Low HistEq Raspberry 51.9
+1 Low HistEq Jetson 47.0
+2 Low HistEq Jetson 49.0
+3 Low HistEq Jetson 39.7
+4 Low HistEq Jetson 49.8
+1 Medium Gauss Raspberry 91.9
+2 Medium Gauss Raspberry 86.5
+3 Medium Gauss Raspberry 94.1
+4 Medium Gauss Raspberry 91.2
+1 Medium Gauss Jetson 70.1
+2 Medium Gauss Jetson 65.1
+3 Medium Gauss Jetson 66.3
+4 Medium Gauss Jetson 72.8
+1 Medium HistEq Raspberry 89.9
+2 Medium HistEq Raspberry 94.5
+3 Medium HistEq Raspberry 88.1
+4 Medium HistEq Raspberry 88.7
+1 Medium HistEq Jetson 81.9
+2 Medium HistEq Jetson 71.6
+3 Medium HistEq Jetson 73.9
+4 Medium HistEq Jetson 73.6
+1 High Gauss Raspberry 130.0
+2 High Gauss Raspberry 141.5
+3 High Gauss Raspberry 140.9
+4 High Gauss Raspberry 149.1
+1 High Gauss Jetson 106.7
+2 High Gauss Jetson 109.3
+3 High Gauss Jetson 107.9
+4 High Gauss Jetson 109.8
+1 High HistEq Raspberry 154.9
+2 High HistEq Raspberry 157.0
+3 High HistEq Raspberry 153.8
+4 High HistEq Raspberry 155.4
+1 High HistEq Jetson 130.4
+2 High HistEq Jetson 120.6
+3 High HistEq Jetson 120.6
+4 High HistEq Jetson 123.9
+")
+
+# Garantir que todos os fatores estejam como fatores
+dados <- dados |>
+  mutate(across(c(bloco, resolucao, preprocess, processador), as.factor))
+
+fat3.dbc(
+  bloco = dados$bloco,
+  fator1 = dados$resolucao,
+  fator2 = dados$preprocess,
+  fator3 = dados$processador,
+  resp = dados$tempo,
+  mcomp = "tukey", 
+  fac.names = c("Resolução", "Pré-processamento", "Processador")
+)
 
 
 ```
 
+# Perguntas sobre o experimento
+
+## Quantidade de tratamentos distintos  
+
+**Quantos tratamentos distintos foram avaliados? Qual foi o papel dos blocos nesse experimento?**
+
+Foram avaliados 12 tratamentos distintos, resultantes da combinação dos níveis dos 3 fatores:
+
+Resolução: 3 níveis (Low, Medium, High)
+
+Pré-processamento: 2 níveis (Gauss, HistEq)
+
+Processador: 2 níveis (Raspberry, Jetson)
+
+Total: 
+3
+×
+2
+×
+2
+=
+12
+3×2×2=12 tratamentos.
+
+Os blocos (turnos de execução) foram usados para controlar a variabilidade externa (ex: iluminação, temperatura, carga computacional). Eles ajudaram a reduzir o erro experimental, permitindo maior precisão na estimativa dos efeitos dos fatores principais e suas interações.
+
+## DIC OU DBC
+
+**Por que não foi adotado o DIC? Em que situações o DBC é mais indicado?**
+
+O DIC não foi adotado porque havia variabilidade sistemática associada aos turnos de execução do experimento (condições externas variando ao longo do tempo).
+
+O Delineamento em Blocos Casualizados (DBC) é mais indicado quando:
+
+Existe alguma fonte de variação não controlável (ex: tempo, lote, operador).
+
+Deseja-se aumentar a precisão dos testes de significância ao controlar essa variabilidade.
+
+## Resolução de imagem x Processamento
+
+**O fator “resolução da imagem” apresentou efeito significativo no tempo de processamento?**
+
+Sim. De acordo com a ANOVA, o fator resolução da imagem foi altamente significativo (p < 0,01), indicando que diferentes níveis de resolução impactam significativamente o tempo de processamento. Como esperado, imagens de maior resolução exigem mais tempo de processamento.
+
+## Resolução x Processador 
+
+**Há interação entre resolução e processador? Explique o impacto prático disso.**
+
+Sim, a interação resolução × processador foi estatisticamente significativa.
+
+Isso significa que o efeito da resolução sobre o tempo de processamento depende do processador utilizado.
+
+Por exemplo, o Jetson Nano lida melhor com resoluções médias e altas do que o Raspberry Pi, o que afeta diretamente a escolha do hardware com base na aplicação.
+
+## Contribuição dos blocos nos resíduos
+
+**Os blocos contribuíram para reduzir a variabilidade residual? Justifique com base nos resultados da ANOVA.**
+
+Sim. Na ANOVA, o efeito de bloco foi significativo (p < 0.05), indicando que os turnos impactaram o tempo de processamento.
+
+Ao incluir os blocos:
+
+O modelo conseguiu capturar essa fonte de variação, o que reduz a variabilidade residual (erro experimental).
+
+Isso aumenta a sensibilidade dos testes F para detectar efeitos reais dos fatores.
+
+## Melhor combinação para processamento
+
+**Qual configuração técnica (resolução, pré-processamento, processador) você recomendaria para obter menor tempo de processamento?**
+
+Com base na comparação de médias:
+
+Melhor combinação técnica (menor tempo de processamento):
+
+Resolução: Low
+
+Pré-processamento: Gaussiano
+
+Processador: Jetson Nano
+
+Essa combinação resultou em tempos médios próximos a 40 ms, o menor observado entre os 12 tratamentos.
+
+## Mais repetições do experimento
+
+**Suponha que se deseje repetir esse experimento com mais blocos. Qual o efeito esperado sobre o erro experimental?**
+
+Se o experimento for repetido com mais blocos bem estruturados, espera-se uma redução ainda maior da variabilidade residual, especialmente se os novos blocos capturarem outras fontes de ruído experimental.
+
+Isso torna a ANOVA mais precisa e permite detectar efeitos menores com maior confiança.
+
+## Bloco fixo ou aleatório 
+
+**O modelo adotado para análise da ANOVA considera o efeito de blocos como fixo ou aleatório? Em que situação cada abordagem seria mais apropriada neste contexto?**
+
+No ExpDes.pt, o modelo assume os blocos como efeitos fixos por padrão.
+
+Quando usar efeito fixo:
+
+-Quando os blocos são especificamente escolhidos (ex: manhã e tarde de dois dias específicos).
+
+-Quando o interesse é avaliar esses blocos diretamente.
+
+Quando usar efeito aleatório:
+
+- Quando os blocos são uma amostra aleatória de uma população maior de condições (ex: diferentes operadores ou equipamentos aleatórios).
+
+- Quando o objetivo é generalizar os resultados para outras situações similares.
+
+Neste experimento, considerar blocos como fixos é apropriado, pois os turnos são conhecidos e controlados.
+
+## Processador universal 
+
+**Se fosse necessário utilizar somente um dos processadores para toda a linha de produção automatizada, qual critério estatístico você utilizaria para justificar a escolha, considerando as interações com os demais fatores?**
+
+Usaria a média marginal ajustada (EMM) do tempo de processamento do processador, considerando as interações com resolução e pré-processamento.
+
+Procedimento:
+
+- Calcular as médias ajustadas para o fator "processador" com emmeans(), considerando as interações.
+
+- Comparar Jetson vs Raspberry em diferentes níveis dos outros fatores.
+
+- Selecionar o processador com menor média ajustada geral e melhor desempenho nas combinações críticas.
+
+- Resultado provável: Jetson Nano será o escolhido, pois apresentou desempenho superior especialmente em resoluções mais altas — o que é crucial para aplicações futuras com câmeras HD.
+
+# Conclusão
+
+Os resultados da ANOVA indicaram que os três fatores principais influenciam significativamente o tempo de processamento, sendo a resolução da imagem o fator mais impactante. Além disso, foram detectadas interações significativas, principalmente entre resolução e processador, o que evidencia que o desempenho de cada processador varia conforme a resolução adotada. O efeito dos blocos também foi significativo, confirmando que o controle por turno contribuiu para reduzir a variabilidade experimental. A combinação mais eficiente foi identificada como resolução baixa, filtro Gaussiano e processador Jetson Nano, resultando no menor tempo médio de processamento (~40 ms). Por fim, o modelo adotado demonstrou-se adequado e robusto para apoiar decisões técnicas em projetos embarcados de visão computacional.

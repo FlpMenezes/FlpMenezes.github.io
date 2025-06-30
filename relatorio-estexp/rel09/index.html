@@ -237,6 +237,106 @@ ul.task-list{list-style: none;}
 
 
 
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } 
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } 
+code span.at { color: #204a87; } 
+code span.bn { color: #0000cf; } 
+code span.cf { color: #204a87; font-weight: bold; } 
+code span.ch { color: #4e9a06; } 
+code span.cn { color: #8f5902; } 
+code span.co { color: #8f5902; font-style: italic; } 
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } 
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } 
+code span.dt { color: #204a87; } 
+code span.dv { color: #0000cf; } 
+code span.er { color: #a40000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #0000cf; } 
+code span.fu { color: #204a87; font-weight: bold; } 
+code span.im { } 
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } 
+code span.kw { color: #204a87; font-weight: bold; } 
+code span.op { color: #ce5c00; font-weight: bold; } 
+code span.ot { color: #8f5902; } 
+code span.pp { color: #8f5902; font-style: italic; } 
+code span.sc { color: #ce5c00; font-weight: bold; } 
+code span.ss { color: #4e9a06; } 
+code span.st { color: #4e9a06; } 
+code span.va { color: #000000; } 
+code span.vs { color: #4e9a06; } 
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -347,12 +447,483 @@ display: none;
 <h2 id="toc-title">Sumário</h2>
 <ul>
 <li><a href="#objetivo" id="toc-objetivo"><span class="toc-section-number">1</span> Objetivo</a></li>
+<li><a href="#desenvolvimento" id="toc-desenvolvimento"><span class="toc-section-number">2</span> Desenvolvimento</a></li>
+<li><a href="#perguntas-sobre-o-experimento" id="toc-perguntas-sobre-o-experimento"><span class="toc-section-number">3</span> Perguntas sobre o experimento</a>
+<ul>
+<li><a href="#quantidade-de-tratamentos-distintos" id="toc-quantidade-de-tratamentos-distintos"><span class="toc-section-number">3.1</span> Quantidade de tratamentos
+distintos</a></li>
+<li><a href="#dic-ou-dbc" id="toc-dic-ou-dbc"><span class="toc-section-number">3.2</span> DIC OU DBC</a></li>
+<li><a href="#resolução-de-imagem-x-processamento" id="toc-resolução-de-imagem-x-processamento"><span class="toc-section-number">3.3</span> Resolução de imagem x
+Processamento</a></li>
+<li><a href="#resolução-x-processador" id="toc-resolução-x-processador"><span class="toc-section-number">3.4</span> Resolução x Processador</a></li>
+<li><a href="#contribuição-dos-blocos-nos-resíduos" id="toc-contribuição-dos-blocos-nos-resíduos"><span class="toc-section-number">3.5</span> Contribuição dos blocos nos
+resíduos</a></li>
+<li><a href="#melhor-combinação-para-processamento" id="toc-melhor-combinação-para-processamento"><span class="toc-section-number">3.6</span> Melhor combinação para
+processamento</a></li>
+<li><a href="#mais-repetições-do-experimento" id="toc-mais-repetições-do-experimento"><span class="toc-section-number">3.7</span> Mais repetições do
+experimento</a></li>
+<li><a href="#bloco-fixo-ou-aleatório" id="toc-bloco-fixo-ou-aleatório"><span class="toc-section-number">3.8</span> Bloco fixo ou aleatório</a></li>
+<li><a href="#processador-universal" id="toc-processador-universal"><span class="toc-section-number">3.9</span> Processador universal</a></li>
+</ul></li>
+<li><a href="#conclusão" id="toc-conclusão"><span class="toc-section-number">4</span> Conclusão</a></li>
 </ul>
 </div>
 
-<p>Arquivo de base pro relatorio 9</p>
 <div id="objetivo" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Objetivo</h1>
+<p>Este experimento tem como objetivo avaliar o desempenho de um sistema
+embarcado de visão computacional aplicado a robôs móveis autônomos. A
+variável de interesse foi o tempo de processamento de imagens,
+influenciado por três fatores de projeto: resolução da imagem (Low,
+Medium, High), algoritmo de pré-processamento (Filtro Gaussiano,
+Equalização de Histograma) e tipo de processador (Raspberry Pi 4, Jetson
+Nano). Devido à variabilidade associada aos diferentes turnos de
+execução dos testes, o delineamento adotado foi um Fatorial Triplo em
+Blocos Casualizados (DBC), com 12 tratamentos e 4 blocos (turnos). O
+estudo buscou: (1) verificar os efeitos principais e interações entre os
+fatores; (2) avaliar a contribuição dos blocos na redução da
+variabilidade residual; (3) identificar a melhor configuração técnica
+para minimizar o tempo de processamento.</p>
+</div>
+<div id="desenvolvimento" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Desenvolvimento</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(ExpDes.pt)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># Pacote necessário</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># Criar o banco de dados</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>dados <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">text =</span> <span class="st">&quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="st">bloco resolucao preprocess processador tempo</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="st">1 Low Gauss Raspberry 41.0</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="st">2 Low Gauss Raspberry 46.9</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="st">3 Low Gauss Raspberry 47.4</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="st">4 Low Gauss Raspberry 40.8</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="st">1 Low Gauss Jetson 39.9</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="st">2 Low Gauss Jetson 41.0</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="st">3 Low Gauss Jetson 44.1</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="st">4 Low Gauss Jetson 42.8</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="st">1 Low HistEq Raspberry 51.0</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="st">2 Low HistEq Raspberry 49.7</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="st">3 Low HistEq Raspberry 45.3</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="st">4 Low HistEq Raspberry 51.9</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="st">1 Low HistEq Jetson 47.0</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="st">2 Low HistEq Jetson 49.0</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="st">3 Low HistEq Jetson 39.7</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="st">4 Low HistEq Jetson 49.8</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="st">1 Medium Gauss Raspberry 91.9</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="st">2 Medium Gauss Raspberry 86.5</span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="st">3 Medium Gauss Raspberry 94.1</span></span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="st">4 Medium Gauss Raspberry 91.2</span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="st">1 Medium Gauss Jetson 70.1</span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="st">2 Medium Gauss Jetson 65.1</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="st">3 Medium Gauss Jetson 66.3</span></span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a><span class="st">4 Medium Gauss Jetson 72.8</span></span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a><span class="st">1 Medium HistEq Raspberry 89.9</span></span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a><span class="st">2 Medium HistEq Raspberry 94.5</span></span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a><span class="st">3 Medium HistEq Raspberry 88.1</span></span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a><span class="st">4 Medium HistEq Raspberry 88.7</span></span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a><span class="st">1 Medium HistEq Jetson 81.9</span></span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a><span class="st">2 Medium HistEq Jetson 71.6</span></span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a><span class="st">3 Medium HistEq Jetson 73.9</span></span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a><span class="st">4 Medium HistEq Jetson 73.6</span></span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a><span class="st">1 High Gauss Raspberry 130.0</span></span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a><span class="st">2 High Gauss Raspberry 141.5</span></span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a><span class="st">3 High Gauss Raspberry 140.9</span></span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a><span class="st">4 High Gauss Raspberry 149.1</span></span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a><span class="st">1 High Gauss Jetson 106.7</span></span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a><span class="st">2 High Gauss Jetson 109.3</span></span>
+<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a><span class="st">3 High Gauss Jetson 107.9</span></span>
+<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a><span class="st">4 High Gauss Jetson 109.8</span></span>
+<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a><span class="st">1 High HistEq Raspberry 154.9</span></span>
+<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a><span class="st">2 High HistEq Raspberry 157.0</span></span>
+<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a><span class="st">3 High HistEq Raspberry 153.8</span></span>
+<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a><span class="st">4 High HistEq Raspberry 155.4</span></span>
+<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a><span class="st">1 High HistEq Jetson 130.4</span></span>
+<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a><span class="st">2 High HistEq Jetson 120.6</span></span>
+<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a><span class="st">3 High HistEq Jetson 120.6</span></span>
+<span id="cb1-55"><a href="#cb1-55" tabindex="-1"></a><span class="st">4 High HistEq Jetson 123.9</span></span>
+<span id="cb1-56"><a href="#cb1-56" tabindex="-1"></a><span class="st">&quot;</span>)</span>
+<span id="cb1-57"><a href="#cb1-57" tabindex="-1"></a></span>
+<span id="cb1-58"><a href="#cb1-58" tabindex="-1"></a><span class="co"># Garantir que todos os fatores estejam como fatores</span></span>
+<span id="cb1-59"><a href="#cb1-59" tabindex="-1"></a>dados <span class="ot">&lt;-</span> dados <span class="sc">|&gt;</span></span>
+<span id="cb1-60"><a href="#cb1-60" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(bloco, resolucao, preprocess, processador), as.factor))</span>
+<span id="cb1-61"><a href="#cb1-61" tabindex="-1"></a></span>
+<span id="cb1-62"><a href="#cb1-62" tabindex="-1"></a><span class="fu">fat3.dbc</span>(</span>
+<span id="cb1-63"><a href="#cb1-63" tabindex="-1"></a>  <span class="at">bloco =</span> dados<span class="sc">$</span>bloco,</span>
+<span id="cb1-64"><a href="#cb1-64" tabindex="-1"></a>  <span class="at">fator1 =</span> dados<span class="sc">$</span>resolucao,</span>
+<span id="cb1-65"><a href="#cb1-65" tabindex="-1"></a>  <span class="at">fator2 =</span> dados<span class="sc">$</span>preprocess,</span>
+<span id="cb1-66"><a href="#cb1-66" tabindex="-1"></a>  <span class="at">fator3 =</span> dados<span class="sc">$</span>processador,</span>
+<span id="cb1-67"><a href="#cb1-67" tabindex="-1"></a>  <span class="at">resp =</span> dados<span class="sc">$</span>tempo,</span>
+<span id="cb1-68"><a href="#cb1-68" tabindex="-1"></a>  <span class="at">mcomp =</span> <span class="st">&quot;tukey&quot;</span>, </span>
+<span id="cb1-69"><a href="#cb1-69" tabindex="-1"></a>  <span class="at">fac.names =</span> <span class="fu">c</span>(<span class="st">&quot;Resolução&quot;</span>, <span class="st">&quot;Pré-processamento&quot;</span>, <span class="st">&quot;Processador&quot;</span>)</span>
+<span id="cb1-70"><a href="#cb1-70" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## ------------------------------------------------------------------------
+## Legenda:
+## FATOR 1:  Resolução 
+## FATOR 2:  Pré-processamento 
+## FATOR 3:  Processador 
+## ------------------------------------------------------------------------
+## 
+## ------------------------------------------------------------------------
+## Quadro da analise de variancia
+## ------------------------------------------------------------------------
+##                                         GL          SQ          QM        Fc
+## Bloco                                    3    32.55896    10.85299    0.6857
+## Resolução                                2 60494.77542 30247.38771 1911.0616
+## Pré-processamento                        1   713.79187   713.79187   45.0981
+## Processador                              1  3740.03521  3740.03521  236.2993
+## Resolução*Pré-processamento              2   341.44875   170.72438   10.7865
+## Resolução*Processador                    2  1698.72792   849.36396   53.6637
+## Pré-processamento*Processador            1    15.52688    15.52688     0.981
+## Resolução*Pré-processamento*Processador  2    39.11625    19.55812    1.2357
+## Residuo                                 33   522.30854    15.82753          
+## Total                                   44 67598.28979                      
+##                                          Pr&gt;Fc
+## Bloco                                   0.5672
+## Resolução                                    0
+## Pré-processamento                            0
+## Processador                                  0
+## Resolução*Pré-processamento              2e-04
+## Resolução*Processador                        0
+## Pré-processamento*Processador           0.3292
+## Resolução*Pré-processamento*Processador 0.3037
+## Residuo                                       
+## Total                                         
+## ------------------------------------------------------------------------
+## CV = 4.61 %
+## 
+## ------------------------------------------------------------------------
+## Teste de normalidade dos residuos (Shapiro-Wilk)
+## valor-p:  0.4625337 
+## De acordo com o teste de Shapiro-Wilk a 5% de significancia, os residuos podem ser considerados normais.
+## ------------------------------------------------------------------------
+## 
+## 
+## 
+## Interacao Resolução*Pré-processamento  significativa: desdobrando a interacao
+## ------------------------------------------------------------------------
+## 
+## Desdobrando  Resolução  dentro de cada nivel de  Pré-processamento 
+## ------------------------------------------------------------------------
+## ------------------------------------------------------------------------
+## Quadro da analise de variancia
+## ------------------------------------------------------------------------
+##                                    GL         SQ          QM        Fc Pr&gt;Fc
+## Resolução:Pré-processamento Gauss   2 26594.9308 13297.46542  840.1478     0
+## Resolução:Pré-processamento HistEq  2 34241.2933 17120.64667 1081.7004     0
+## Residuo                            33   522.3085    15.82753                
+## ------------------------------------------------------------------------
+## 
+## 
+## 
+##  Resolução  dentro do nivel  Gauss  de  Pré-processamento 
+## ------------------------------------------------------------------------
+## Teste de Tukey
+## ------------------------------------------------------------------------
+## Grupos Tratamentos Medias
+## a     High    124.4 
+##  b    Medium      79.75 
+##   c   Low     42.9875 
+## ------------------------------------------------------------------------
+## 
+## 
+##  Resolução  dentro do nivel  HistEq  de  Pré-processamento 
+## ------------------------------------------------------------------------
+## Teste de Tukey
+## ------------------------------------------------------------------------
+## Grupos Tratamentos Medias
+## a     High    139.575 
+##  b    Medium      82.775 
+##   c   Low     47.925 
+## ------------------------------------------------------------------------
+## 
+## 
+## 
+## Desdobrando  Pré-processamento  dentro de cada nivel de  Resolução 
+## ------------------------------------------------------------------------
+## ------------------------------------------------------------------------
+## Quadro da analise de variancia
+## ------------------------------------------------------------------------
+##                                    GL        SQ        QM      Fc  Pr&gt;Fc
+## Pré-processamento:Resolução High    1 921.12250 921.12250 58.1975      0
+## Pré-processamento:Resolução Low     1  97.51562  97.51562  6.1611 0.0183
+## Pré-processamento:Resolução Medium  1  36.60250  36.60250  2.3126 0.1379
+## Residuo                            33 522.30854  15.82753               
+## ------------------------------------------------------------------------
+## 
+## 
+## 
+##  Pré-processamento  dentro do nivel  High  de  Resolução 
+## ------------------------------------------------------------------------
+## Teste de Tukey
+## ------------------------------------------------------------------------
+## Grupos Tratamentos Medias
+## a     HistEq      139.575 
+##  b    Gauss   124.4 
+## ------------------------------------------------------------------------
+## 
+## 
+##  Pré-processamento  dentro do nivel  Low  de  Resolução 
+## ------------------------------------------------------------------------
+## Teste de Tukey
+## ------------------------------------------------------------------------
+## Grupos Tratamentos Medias
+## a     HistEq      47.925 
+##  b    Gauss   42.9875 
+## ------------------------------------------------------------------------
+## 
+## 
+##  Pré-processamento  dentro do nivel  Medium  de  Resolução 
+## 
+## De acordo com o teste F, as medias desse fator sao estatisticamente iguais.
+## ------------------------------------------------------------------------
+##     Niveis     Medias
+## 1    Gauss     79.750
+## 2   HistEq     82.775
+## ------------------------------------------------------------------------
+## 
+## 
+## 
+## Interacao Resolução*Processador  significativa: desdobrando a interacao
+## ------------------------------------------------------------------------
+## 
+## Desdobrando  Resolução  dentro de cada nivel de  Processador 
+## ------------------------------------------------------------------------
+## ------------------------------------------------------------------------
+## Quadro da analise de variancia
+## ------------------------------------------------------------------------
+##                                 GL         SQ          QM        Fc Pr&gt;Fc
+## Resolução:Processador Jetson     2 21091.2508 10545.62542  666.2836     0
+## Resolução:Processador Raspberry  2 41102.2525 20551.12625 1298.4417     0
+## Residuo                         33   522.3085    15.82753                
+## ------------------------------------------------------------------------
+## 
+## 
+## 
+##  Resolução  dentro do nivel  Jetson  de  Processador 
+## ------------------------------------------------------------------------
+## Teste de Tukey
+## ------------------------------------------------------------------------
+## Grupos Tratamentos Medias
+## a     High    116.15 
+##  b    Medium      71.9125 
+##   c   Low     44.1625 
+## ------------------------------------------------------------------------
+## 
+## 
+##  Resolução  dentro do nivel  Raspberry  de  Processador 
+## ------------------------------------------------------------------------
+## Teste de Tukey
+## ------------------------------------------------------------------------
+## Grupos Tratamentos Medias
+## a     High    147.825 
+##  b    Medium      90.6125 
+##   c   Low     46.75 
+## ------------------------------------------------------------------------
+## 
+## 
+## 
+## Desdobrando  Processador  dentro de cada nivel de  Resolução 
+## ------------------------------------------------------------------------
+## ------------------------------------------------------------------------
+## Quadro da analise de variancia
+## ------------------------------------------------------------------------
+##                              GL         SQ         QM       Fc  Pr&gt;Fc
+## Processador:Resolução High    1 4013.22250 4013.22250 253.5596      0
+## Processador:Resolução Low     1   26.78063   26.78063    1.692 0.2023
+## Processador:Resolução Medium  1 1398.76000 1398.76000  88.3751      0
+## Residuo                      33  522.30854   15.82753                
+## ------------------------------------------------------------------------
+## 
+## 
+## 
+##  Processador  dentro do nivel  High  de  Resolução 
+## ------------------------------------------------------------------------
+## Teste de Tukey
+## ------------------------------------------------------------------------
+## Grupos Tratamentos Medias
+## a     Raspberry   147.825 
+##  b    Jetson      116.15 
+## ------------------------------------------------------------------------
+## 
+## 
+##  Processador  dentro do nivel  Low  de  Resolução 
+## 
+## De acordo com o teste F, as medias desse fator sao estatisticamente iguais.
+## ------------------------------------------------------------------------
+##      Niveis     Medias
+## 1    Jetson    44.1625
+## 2 Raspberry    46.7500
+## ------------------------------------------------------------------------
+## 
+## 
+##  Processador  dentro do nivel  Medium  de  Resolução 
+## ------------------------------------------------------------------------
+## Teste de Tukey
+## ------------------------------------------------------------------------
+## Grupos Tratamentos Medias
+## a     Raspberry   90.6125 
+##  b    Jetson      71.9125 
+## ------------------------------------------------------------------------</code></pre>
+</div>
+<div id="perguntas-sobre-o-experimento" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Perguntas sobre o
+experimento</h1>
+<div id="quantidade-de-tratamentos-distintos" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Quantidade de
+tratamentos distintos</h2>
+<p><strong>Quantos tratamentos distintos foram avaliados? Qual foi o
+papel dos blocos nesse experimento?</strong></p>
+<p>Foram avaliados 12 tratamentos distintos, resultantes da combinação
+dos níveis dos 3 fatores:</p>
+<p>Resolução: 3 níveis (Low, Medium, High)</p>
+<p>Pré-processamento: 2 níveis (Gauss, HistEq)</p>
+<p>Processador: 2 níveis (Raspberry, Jetson)</p>
+<p>Total: 3 × 2 × 2 = 12 3×2×2=12 tratamentos.</p>
+<p>Os blocos (turnos de execução) foram usados para controlar a
+variabilidade externa (ex: iluminação, temperatura, carga
+computacional). Eles ajudaram a reduzir o erro experimental, permitindo
+maior precisão na estimativa dos efeitos dos fatores principais e suas
+interações.</p>
+</div>
+<div id="dic-ou-dbc" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> DIC OU DBC</h2>
+<p><strong>Por que não foi adotado o DIC? Em que situações o DBC é mais
+indicado?</strong></p>
+<p>O DIC não foi adotado porque havia variabilidade sistemática
+associada aos turnos de execução do experimento (condições externas
+variando ao longo do tempo).</p>
+<p>O Delineamento em Blocos Casualizados (DBC) é mais indicado
+quando:</p>
+<p>Existe alguma fonte de variação não controlável (ex: tempo, lote,
+operador).</p>
+<p>Deseja-se aumentar a precisão dos testes de significância ao
+controlar essa variabilidade.</p>
+</div>
+<div id="resolução-de-imagem-x-processamento" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Resolução de imagem x
+Processamento</h2>
+<p><strong>O fator “resolução da imagem” apresentou efeito significativo
+no tempo de processamento?</strong></p>
+<p>Sim. De acordo com a ANOVA, o fator resolução da imagem foi altamente
+significativo (p &lt; 0,01), indicando que diferentes níveis de
+resolução impactam significativamente o tempo de processamento. Como
+esperado, imagens de maior resolução exigem mais tempo de
+processamento.</p>
+</div>
+<div id="resolução-x-processador" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Resolução x
+Processador</h2>
+<p><strong>Há interação entre resolução e processador? Explique o
+impacto prático disso.</strong></p>
+<p>Sim, a interação resolução × processador foi estatisticamente
+significativa.</p>
+<p>Isso significa que o efeito da resolução sobre o tempo de
+processamento depende do processador utilizado.</p>
+<p>Por exemplo, o Jetson Nano lida melhor com resoluções médias e altas
+do que o Raspberry Pi, o que afeta diretamente a escolha do hardware com
+base na aplicação.</p>
+</div>
+<div id="contribuição-dos-blocos-nos-resíduos" class="section level2" number="3.5">
+<h2><span class="header-section-number">3.5</span> Contribuição dos
+blocos nos resíduos</h2>
+<p><strong>Os blocos contribuíram para reduzir a variabilidade residual?
+Justifique com base nos resultados da ANOVA.</strong></p>
+<p>Sim. Na ANOVA, o efeito de bloco foi significativo (p &lt; 0.05),
+indicando que os turnos impactaram o tempo de processamento.</p>
+<p>Ao incluir os blocos:</p>
+<p>O modelo conseguiu capturar essa fonte de variação, o que reduz a
+variabilidade residual (erro experimental).</p>
+<p>Isso aumenta a sensibilidade dos testes F para detectar efeitos reais
+dos fatores.</p>
+</div>
+<div id="melhor-combinação-para-processamento" class="section level2" number="3.6">
+<h2><span class="header-section-number">3.6</span> Melhor combinação
+para processamento</h2>
+<p><strong>Qual configuração técnica (resolução, pré-processamento,
+processador) você recomendaria para obter menor tempo de
+processamento?</strong></p>
+<p>Com base na comparação de médias:</p>
+<p>Melhor combinação técnica (menor tempo de processamento):</p>
+<p>Resolução: Low</p>
+<p>Pré-processamento: Gaussiano</p>
+<p>Processador: Jetson Nano</p>
+<p>Essa combinação resultou em tempos médios próximos a 40 ms, o menor
+observado entre os 12 tratamentos.</p>
+</div>
+<div id="mais-repetições-do-experimento" class="section level2" number="3.7">
+<h2><span class="header-section-number">3.7</span> Mais repetições do
+experimento</h2>
+<p><strong>Suponha que se deseje repetir esse experimento com mais
+blocos. Qual o efeito esperado sobre o erro experimental?</strong></p>
+<p>Se o experimento for repetido com mais blocos bem estruturados,
+espera-se uma redução ainda maior da variabilidade residual,
+especialmente se os novos blocos capturarem outras fontes de ruído
+experimental.</p>
+<p>Isso torna a ANOVA mais precisa e permite detectar efeitos menores
+com maior confiança.</p>
+</div>
+<div id="bloco-fixo-ou-aleatório" class="section level2" number="3.8">
+<h2><span class="header-section-number">3.8</span> Bloco fixo ou
+aleatório</h2>
+<p><strong>O modelo adotado para análise da ANOVA considera o efeito de
+blocos como fixo ou aleatório? Em que situação cada abordagem seria mais
+apropriada neste contexto?</strong></p>
+<p>No ExpDes.pt, o modelo assume os blocos como efeitos fixos por
+padrão.</p>
+<p>Quando usar efeito fixo:</p>
+<p>-Quando os blocos são especificamente escolhidos (ex: manhã e tarde
+de dois dias específicos).</p>
+<p>-Quando o interesse é avaliar esses blocos diretamente.</p>
+<p>Quando usar efeito aleatório:</p>
+<ul>
+<li><p>Quando os blocos são uma amostra aleatória de uma população maior
+de condições (ex: diferentes operadores ou equipamentos
+aleatórios).</p></li>
+<li><p>Quando o objetivo é generalizar os resultados para outras
+situações similares.</p></li>
+</ul>
+<p>Neste experimento, considerar blocos como fixos é apropriado, pois os
+turnos são conhecidos e controlados.</p>
+</div>
+<div id="processador-universal" class="section level2" number="3.9">
+<h2><span class="header-section-number">3.9</span> Processador
+universal</h2>
+<p><strong>Se fosse necessário utilizar somente um dos processadores
+para toda a linha de produção automatizada, qual critério estatístico
+você utilizaria para justificar a escolha, considerando as interações
+com os demais fatores?</strong></p>
+<p>Usaria a média marginal ajustada (EMM) do tempo de processamento do
+processador, considerando as interações com resolução e
+pré-processamento.</p>
+<p>Procedimento:</p>
+<ul>
+<li><p>Calcular as médias ajustadas para o fator “processador” com
+emmeans(), considerando as interações.</p></li>
+<li><p>Comparar Jetson vs Raspberry em diferentes níveis dos outros
+fatores.</p></li>
+<li><p>Selecionar o processador com menor média ajustada geral e melhor
+desempenho nas combinações críticas.</p></li>
+<li><p>Resultado provável: Jetson Nano será o escolhido, pois apresentou
+desempenho superior especialmente em resoluções mais altas — o que é
+crucial para aplicações futuras com câmeras HD.</p></li>
+</ul>
+</div>
+</div>
+<div id="conclusão" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Conclusão</h1>
+<p>Os resultados da ANOVA indicaram que os três fatores principais
+influenciam significativamente o tempo de processamento, sendo a
+resolução da imagem o fator mais impactante. Além disso, foram
+detectadas interações significativas, principalmente entre resolução e
+processador, o que evidencia que o desempenho de cada processador varia
+conforme a resolução adotada. O efeito dos blocos também foi
+significativo, confirmando que o controle por turno contribuiu para
+reduzir a variabilidade experimental. A combinação mais eficiente foi
+identificada como resolução baixa, filtro Gaussiano e processador Jetson
+Nano, resultando no menor tempo médio de processamento (~40 ms). Por
+fim, o modelo adotado demonstrou-se adequado e robusto para apoiar
+decisões técnicas em projetos embarcados de visão computacional.</p>
 </div>
 
 

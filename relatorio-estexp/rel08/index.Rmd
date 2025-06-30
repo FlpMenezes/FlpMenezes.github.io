@@ -54,7 +54,7 @@ Avaliar a influência da corrente elétrica (A) sobre a dissipação térmica (W
 
 
 ## ANOVA com dic (ExpDes.pt)
-```{r, carregando-pacotes, message=FALSE, warning=FALSE}
+```{r carregando-pacotes, echo=TRUE, message=FALSE, warning=FALSE}
 # Pacotes necessários
 library(ggplot2)
 library(car)
@@ -116,7 +116,7 @@ durbinWatsonTest(modelo)
 ```
 # Perguntas sobre o experimento
 ## Equação da reta ajustada
-```{r}
+```{r echo=TRUE}
 library(ggplot2)
 library(car)
 library(nortest)
@@ -180,7 +180,7 @@ A linha de interesse é a da variável Corrente.
 O valor-p da variável Corrente é muito menor que 0.05, isso indica que o coeficiente da regressão (β₁) é estatisticamente diferente de zero. Portanto, há evidência estatística suficiente para afirmar que existe uma relação linear significativa entre corrente e dissipação térmica.
 
 ## Reta Ajustada
-```{r}
+```{r echo=TRUE}
 # Pacotes necessários
 library(ggplot2)
 library(car)
@@ -212,7 +212,7 @@ ggplot(dados, aes(x = Corrente, y = Dissipacao)) +
 ```
 
 ## Regressão linear é apropiada
-```{r}
+```{r echo=TRUE}
 library(ggplot2)
 library(car)
 library(nortest)
@@ -245,7 +245,7 @@ Sim, nesse intervalo de estudo, os três modelos mostrariam uma boa estimativa d
 
 ## Estimativa para tensão de 3,5 mm
 
-```{r}
+```{r echo=TRUE}
 library(ggplot2)
 library(car)
 library(nortest)
